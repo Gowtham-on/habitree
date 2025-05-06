@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Habitree</string>
+    <string name="build_lasting_habits">Build lasting habits in just a few minutes each day.</string>
+    <string name="grow_with_small_steps">Grow with Small Steps</string>
+    <string name="get_started">Get Started</string>
+    <string name="main_focus">What\'s your main focus?</string>
+    <string name="mindfulness">☘️ Mindfulness &amp; Wellness</string>
+    <string name="fitness_health">🏃 Fitness &amp; Health</string>
+    <string name="learning_productivity">📚 Learning \&amp; Productivity</string>
+    <string name="better_sleep">🌙 Better Sleep</string>
+    <string name="creative_habits">🎨 Creative Habits</string>
+    <string name="career_growth">💼 Career Growth</string>
+    <string name="continue_text">Continue</string>
+    <string name="time_commitment">How many minutes can you commit daily?</string>
+    <string name="adjust_later">You can adjust this later</string>
+    <string name="personalize">Personalize your experience!</string>
+    <string name="prefer_habit_time">When do you prefer habits?</string>
+    <string name="habit_stopping_reason">What stops your habits?</string>
+    <string name="morning">Morning</string>
+    <string name="afternoon">Afternoon</string>
+    <string name="evening">Evening</string>
+    <string name="anytime">Anytime</string>
+    <string name="none">None</string>
+    <string name="time">Time</string>
+    <string name="forgetfulness">Forgetfulness</string>
+    <string name="motivation">Motivation</string>
+    <string name="distraction">Distraction</string>
+    <string name="stay_on_track">Stay On Track!</string>
+    <string name="permission_reminder">Get gentle, timely and context-aware reminders to build your habits</string>
+    <string name="allow_notifications">Allow Notifications</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="home">Home</string>
+    <string name="habit_details">Habit Details</string>
+    <string name="insights">Insights</string>
+    <string name="profile">Profile</string>
+</resources>
