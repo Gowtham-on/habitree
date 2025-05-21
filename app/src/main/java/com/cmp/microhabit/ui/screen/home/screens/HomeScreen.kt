@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.utils.SetVerticalGap
 
@@ -17,8 +19,14 @@ import com.cmp.microhabit.utils.SetVerticalGap
 fun HomeScreen(viewmodel: HomeViewmodel) {
     Column(
         modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
-            .safeContentPadding()
+            .background(brush = Brush.verticalGradient(
+                colors = listOf(
+                    Color(0xFFE6F8F1), // #e6f8f1
+                    Color(0xFFC6F5DE)  // #c6f5de
+                )
+            ))
+            .padding(bottom = 7.dp)
+            .padding(horizontal = 5.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
         ,

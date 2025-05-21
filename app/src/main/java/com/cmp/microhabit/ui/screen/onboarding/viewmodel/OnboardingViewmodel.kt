@@ -89,11 +89,15 @@ class OnboardingViewmodel @Inject constructor(
         viewModelScope.launch {
             OnboardingPreferences.getOnboardingData(context).collect {
                 if (it == null) return@collect
-                _focusSelection.clear()
-                _focusSelection.addAll(it.habitType)
-                _timeSelection.intValue = it.practiceDuration
-                _habitPreferenceTime.value = it.habitPreferenceTime
-                _habitStoppingReason.addAll(it.habitStoppingReason)
+                try {
+                    _focusSelection.clear()
+                    _focusSelection.addAll(it.habitType)
+                    _timeSelection.intValue = it.practiceDuration
+                    _habitPreferenceTime.value = it.habitPreferenceTime
+                    _habitStoppingReason.addAll(it.habitStoppingReason)
+                } catch (e: Exception) {
+
+                }
             }
         }
     }

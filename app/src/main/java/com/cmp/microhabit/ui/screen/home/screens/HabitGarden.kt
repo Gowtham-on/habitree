@@ -1,19 +1,31 @@
 package com.cmp.microhabit.ui.screen.home.screens
 
 import android.view.HapticFeedbackConstants
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmp.microhabit.R
+import com.cmp.microhabit.ui.component.calendar.GetHabitCalendarView
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
 import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
@@ -29,16 +42,28 @@ import com.cmp.microhabit.utils.SetVerticalGap
 
 @Composable
 fun HabitGarden(viewmodel: HomeViewmodel) {
-    Column {
-        Text("Habit Garden", style = MaterialTheme.typography.bodyMedium)
+    Column(
+        modifier = Modifier.padding(horizontal = 10.dp)
+    ) {
+        Text(
+            "Habit Garden",
+            style = MaterialTheme.typography.bodyMedium,
+        )
         SetVerticalGap(16)
         GetHabitGarden()
+        SetVerticalGap(16)
+        GetStartButton()
+        SetVerticalGap(16)
+        GetHabitCalendarView()
+        SetVerticalGap(20)
+
     }
 }
 
 @Composable
 fun GetHabitGarden() {
     val onBoardingViewmodel: OnboardingViewmodel = hiltViewModel()
+
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         onBoardingViewmodel.focusSelection.chunked(2).forEach {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -60,13 +85,15 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
     val haptic = LocalView.current
 
     Card(
-        modifier = modifier.clickable(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(
             onClick = {
                 haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
             }
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            containerColor = Color.White.copy(alpha = 0.8f)
         )
     ) {
         Column(
@@ -84,6 +111,66 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
                 textAlign = TextAlign.Center, maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun GetStartButton() {
+    val onBoardingViewmodel: OnboardingViewmodel = hiltViewModel()
+    val haptic = LocalView.current
+
+    val infiniteTransition = rememberInfiniteTransition()
+    val borderWidth by infiniteTransition.animateFloat(
+        initialValue = 8f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1200,
+                easing = FastOutSlowInEasing
+            ),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        Modifier
+            .border(
+                width = borderWidth.toInt().dp,
+                color = Color(0xFFC6F5DE) ,
+                shape = RoundedCornerShape(35.dp)
+            )
+            .background(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(35.dp)
+            )
+            .padding(7.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(30.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.primary
+                )
+                .clickable(onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                }),
+        ) {
+            if (onBoardingViewmodel.focusSelection.isEmpty()) {
+                return@Box
+            }
+            Text(
+                "Quick Start: ${onBoardingViewmodel.focusSelection.first().name.drop(3)}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 18.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                color = Color.White,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

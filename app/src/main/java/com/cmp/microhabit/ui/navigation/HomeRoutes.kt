@@ -106,7 +106,7 @@ fun BottomBar(navController: NavController) {
 
     Card(
         modifier = Modifier
-            .padding(bottom = 25.dp)
+            .padding(bottom = 5.dp)
             .padding(horizontal = 12.dp),
         border = BorderStroke(width = 1.dp, color = Color.Gray.copy(alpha = 0.2f)),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary)
