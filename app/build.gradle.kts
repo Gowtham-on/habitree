@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.dagger.hilt)
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -74,6 +76,10 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.accompanist.systemuicontroller)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx) // If using authentication
+    implementation(libs.firebase.firestore.ktx)
 
 
 }

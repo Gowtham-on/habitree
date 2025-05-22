@@ -1,6 +1,7 @@
 package com.cmp.microhabit
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,18 +27,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("FIREBASE_TEST", "onCreate called, context: $this, app: ${applicationContext.packageName}")
+
         enableEdgeToEdge()
         setContent {
-//            val systemUiController = rememberSystemUiController()
-//            val isDark = isSystemInDarkTheme()
-//
-//            SideEffect {
-//                systemUiController.setStatusBarColor(
-//                    color = if (isDark) Color.Black else Color.Black,
-//                    darkIcons = false
-//                )
-//            }
-
             MicroHabitTheme (darkTheme = false) {
                 val viewModel: OnboardingViewmodel = hiltViewModel()
                 val onboardingCompleted by viewModel.onBoardingCompleted.collectAsState(initial = null)

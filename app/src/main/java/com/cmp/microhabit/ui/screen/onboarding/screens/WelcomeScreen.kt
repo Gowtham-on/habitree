@@ -46,9 +46,7 @@ fun WelcomeScreen(onNext: () -> Unit) {
                     color = Color.Black,
                     textAlign = TextAlign.Center
                 )
-//                SetVerticalGap(30)
                 LottieAnimationView(R.raw.welcome_lottie, height = 400)
-//                SetVerticalGap(30)
                 MhButton(
                     name = stringResource(R.string.get_started),
                     onClick = {

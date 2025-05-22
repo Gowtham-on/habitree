@@ -62,12 +62,12 @@ fun GetButtonOptions(viewmodel: OnboardingViewmodel) {
     val context = LocalContext.current
     val buttonData = remember {
         listOf(
-            HabitSelection(1, context.getString(R.string.mindfulness)),
-            HabitSelection(2, context.getString(R.string.fitness_health)),
-            HabitSelection(3, context.getString(R.string.learning_productivity)),
-            HabitSelection(4, context.getString(R.string.better_sleep)),
-            HabitSelection(5, context.getString(R.string.creative_habits)),
-            HabitSelection(6, context.getString(R.string.career_growth)),
+            HabitSelection(1, context.getString(R.string.mindfulness), 0),
+            HabitSelection(2, context.getString(R.string.fitness_health), 0),
+            HabitSelection(3, context.getString(R.string.learning_productivity), 0),
+            HabitSelection(4, context.getString(R.string.better_sleep), 0),
+            HabitSelection(5, context.getString(R.string.creative_habits), 0),
+            HabitSelection(6, context.getString(R.string.career_growth), 0),
         )
     }
 

@@ -16,4 +16,13 @@ data class OnboardingData(
 data class HabitSelection (
     val id: Int,
     val name: String,
+    var preferenceTime: Int
+)
+
+data class UserData (
+    val id: Long,
+    val userName: String,
+    val habitPreference: List<HabitSelection>,
+    val habitStoppingReason: List<HabitStoppingReason>,
+    val habitPrefTime: HabitPreferenceTime
 )

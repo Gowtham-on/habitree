@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
 import com.cmp.microhabit.ui.screen.onboarding.model.OnboardingData
+import com.cmp.microhabit.ui.screen.onboarding.repository.OnboardingRepository
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitPreferenceTime
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitStoppingReason
 import com.cmp.microhabit.ui.screen.onboarding.utils.OnboardingPreferences
@@ -29,6 +30,8 @@ class OnboardingViewmodel @Inject constructor(
         getOnBoardingData(context)
     }
 
+    val repo = OnboardingRepository()
+
     private val _focusSelection = mutableStateListOf<HabitSelection>()
     val focusSelection: List<HabitSelection> get() = _focusSelection
 
@@ -38,6 +41,11 @@ class OnboardingViewmodel @Inject constructor(
 
     fun removeFocusSelection(value: HabitSelection) {
         _focusSelection.remove(value)
+    }
+
+    fun setFocusSelection(list: List<HabitSelection>) {
+        _focusSelection.clear()
+        _focusSelection.addAll(list)
     }
 
     private val _timeSelection = mutableIntStateOf(-1)
@@ -100,5 +108,17 @@ class OnboardingViewmodel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun addUserData(result: (Boolean, Int?) -> Unit) {
+        focusSelection.map {
+            it.preferenceTime = timeSelection.value
+        }
+        repo.saveUserData(
+            focusSelection,
+            habitStoppingReason,
+            habitPreferenceTime.value,
+            result
+        )
     }
 }
