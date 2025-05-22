@@ -14,15 +14,23 @@ data class OnboardingData(
 
 @Serializable
 data class HabitSelection (
-    val id: Int,
-    val name: String,
-    var preferenceTime: Int
+    val id: Int = -1,
+    val name: String = "",
+    var preferenceTime: Int = 0,
+    val logs: List<HabitLog> = emptyList()
 )
 
 data class UserData (
-    val id: Long,
-    val userName: String,
-    val habitPreference: List<HabitSelection>,
-    val habitStoppingReason: List<HabitStoppingReason>,
-    val habitPrefTime: HabitPreferenceTime
+    val id: Long = -1,
+    val userName: String = "",
+    val habitPreference: List<HabitSelection> = listOf<HabitSelection>(),
+    val habitStoppingReason: List<HabitStoppingReason> = listOf<HabitStoppingReason>(),
+    val habitPrefTime: HabitPreferenceTime = HabitPreferenceTime.NONE,
+)
+
+@Serializable
+data class HabitLog(
+    val date: String = "",
+    val completed: Boolean = false,
+    val timestamp: Long = 0L
 )

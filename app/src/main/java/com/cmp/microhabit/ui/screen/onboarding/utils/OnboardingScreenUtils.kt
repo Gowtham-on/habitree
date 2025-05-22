@@ -1,6 +1,7 @@
 package com.cmp.microhabit.ui.screen.onboarding.utils
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -26,6 +27,7 @@ enum class HabitStoppingReason {
 object OnboardingPreferences {
     private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     val ONBOARDING_JSON = stringPreferencesKey("onboarding_json")
+    val USER_ID = stringPreferencesKey("user_id")
 
     suspend fun setOnboardingCompleted(
         context: Context,
@@ -37,6 +39,12 @@ object OnboardingPreferences {
         context.dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETED] = completed
             preferences[ONBOARDING_JSON] = json
+        }
+    }
+
+    suspend fun setUserId(context: Context, userId: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ID] = userId
         }
     }
 
@@ -53,6 +61,13 @@ object OnboardingPreferences {
                     null
                 }
             }
+        }
+    }
+
+    fun getUserId(context: Context): Flow<String?> {
+        Log.d("userValue", "userId.toString()")
+        return context.dataStore.data.map { prefs ->
+            prefs[USER_ID]
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.cmp.microhabit.ui.screen.home.screens
 
 import android.view.HapticFeedbackConstants
+import android.widget.Toast
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,7 +67,7 @@ fun GetHabitGarden() {
     val onBoardingViewmodel: OnboardingViewmodel = hiltViewModel()
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        onBoardingViewmodel.focusSelection.chunked(2).forEach {
+        onBoardingViewmodel.userData.value.habitPreference.chunked(2).forEach {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 it.forEach {
                     GetHabitGardenItem(
@@ -88,10 +90,10 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .clickable(
-            onClick = {
-                haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-            }
-        ),
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                }
+            ),
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.8f)
         )
@@ -119,7 +121,10 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
 @Composable
 fun GetStartButton() {
     val onBoardingViewmodel: OnboardingViewmodel = hiltViewModel()
+    val homeViewmodel: HomeViewmodel = hiltViewModel()
+
     val haptic = LocalView.current
+    val context = LocalContext.current
 
     val infiniteTransition = rememberInfiniteTransition()
     val borderWidth by infiniteTransition.animateFloat(
@@ -138,7 +143,7 @@ fun GetStartButton() {
         Modifier
             .border(
                 width = borderWidth.toInt().dp,
-                color = Color(0xFFC6F5DE) ,
+                color = Color(0xFFC6F5DE),
                 shape = RoundedCornerShape(35.dp)
             )
             .background(
@@ -155,14 +160,25 @@ fun GetStartButton() {
                     color = MaterialTheme.colorScheme.primary
                 )
                 .clickable(onClick = {
+                    val userData = onBoardingViewmodel.userData.value
                     haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    homeViewmodel.setHabitDone(
+                        userData.id.toString(),
+                        userData.habitPreference.first().id.toString()
+                    ) {
+                        Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
+                    }
                 }),
         ) {
-            if (onBoardingViewmodel.focusSelection.isEmpty()) {
+            if (onBoardingViewmodel.userData.value.habitPreference.isEmpty()) {
                 return@Box
             }
             Text(
-                "Quick Start: ${onBoardingViewmodel.focusSelection.first().name.drop(3)}",
+                "Quick Start: ${
+                    onBoardingViewmodel.userData.value.habitPreference.first().name.drop(
+                        3
+                    )
+                }",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .padding(horizontal = 10.dp, vertical = 18.dp)

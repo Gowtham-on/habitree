@@ -25,7 +25,10 @@ import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
 fun HomeProgressIndicator(viewmodel: HomeViewmodel) {
     val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
     if (!onboardingViewmodel.focusSelection.isEmpty()) {
-        viewmodel.setProgress((1f / onboardingViewmodel.focusSelection.size.toFloat()))
+        val pref = onboardingViewmodel.userData.value.habitPreference.size
+        if (pref > 0) {
+            viewmodel.setProgress((1f / onboardingViewmodel.userData.value.habitPreference.size.toFloat()))
+        }
     }
     val floatProgress: Float by animateFloatAsState(
         targetValue = viewmodel.progressPercentage.value,
@@ -39,7 +42,7 @@ fun HomeProgressIndicator(viewmodel: HomeViewmodel) {
             CircularProgressIndicator(
                 progress = { floatProgress },
                 color = MaterialTheme.colorScheme.primary,
-                strokeWidth = 12.dp,
+                strokeWidth = 14.dp,
                 trackColor = Color.Gray,
                 gapSize = Dp.Unspecified,
                 strokeCap = StrokeCap.Round,

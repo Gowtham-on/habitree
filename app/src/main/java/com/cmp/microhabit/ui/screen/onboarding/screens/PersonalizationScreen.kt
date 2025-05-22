@@ -69,6 +69,7 @@ fun PersonalizationScreen(onNext: () -> Unit, viewmodel: OnboardingViewmodel = v
                     ) {
                         viewmodel.addUserData { isSuccess, res ->
                             if (isSuccess) {
+                                viewmodel.setUserId(res ?: -1)
                                 onNext()
                             } else {
                                 Toast.makeText(context, "", Toast.LENGTH_SHORT).show()

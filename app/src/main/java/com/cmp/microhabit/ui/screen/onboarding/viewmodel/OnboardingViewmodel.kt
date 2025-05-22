@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
 import com.cmp.microhabit.ui.screen.onboarding.model.OnboardingData
+import com.cmp.microhabit.ui.screen.onboarding.model.UserData
 import com.cmp.microhabit.ui.screen.onboarding.repository.OnboardingRepository
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitPreferenceTime
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitStoppingReason
@@ -23,14 +24,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewmodel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val repo: OnboardingRepository
 ) : ViewModel() {
 
     init {
         getOnBoardingData(context)
+        getUserId(context)
     }
-
-    val repo = OnboardingRepository()
 
     private val _focusSelection = mutableStateListOf<HabitSelection>()
     val focusSelection: List<HabitSelection> get() = _focusSelection
@@ -43,10 +44,6 @@ class OnboardingViewmodel @Inject constructor(
         _focusSelection.remove(value)
     }
 
-    fun setFocusSelection(list: List<HabitSelection>) {
-        _focusSelection.clear()
-        _focusSelection.addAll(list)
-    }
 
     private val _timeSelection = mutableIntStateOf(-1)
     val timeSelection: State<Int> get() = _timeSelection
@@ -79,6 +76,24 @@ class OnboardingViewmodel @Inject constructor(
             SharingStarted.Eagerly, null
         )
 
+    private val _userData = mutableStateOf<UserData>(
+        UserData(
+            id = -1L,
+            userName = "",
+            habitPreference = emptyList(),
+            habitStoppingReason = emptyList(),
+            habitPrefTime = HabitPreferenceTime.NONE
+        )
+    )
+    val userData: State<UserData> get() = _userData
+
+    fun setUserData(value: UserData? = null) {
+        if (value != null) {
+            _userData.value = value
+        }
+    }
+
+
     fun setOnboardingDone() {
         val onboardingData = OnboardingData(
             habitType = focusSelection,
@@ -89,6 +104,12 @@ class OnboardingViewmodel @Inject constructor(
 
         viewModelScope.launch {
             OnboardingPreferences.setOnboardingCompleted(context, completed = true, onboardingData)
+        }
+    }
+
+    fun setUserId(userId: Int) {
+        viewModelScope.launch {
+            OnboardingPreferences.setUserId(context, userId.toString())
         }
     }
 
@@ -104,21 +125,33 @@ class OnboardingViewmodel @Inject constructor(
                     _habitPreferenceTime.value = it.habitPreferenceTime
                     _habitStoppingReason.addAll(it.habitStoppingReason)
                 } catch (e: Exception) {
-
                 }
             }
         }
     }
 
-    fun addUserData(result: (Boolean, Int?) -> Unit) {
-        focusSelection.map {
-            it.preferenceTime = timeSelection.value
+    fun getUserId(context: Context) {
+        viewModelScope.launch {
+            OnboardingPreferences.getUserId(context).collect {
+                if (it == null) return@collect
+                getUserData(it.toInt())
+            }
         }
+    }
+
+    fun addUserData(result: (Boolean, Int?) -> Unit) {
+        focusSelection.map { it.preferenceTime = timeSelection.value }
         repo.saveUserData(
             focusSelection,
             habitStoppingReason,
             habitPreferenceTime.value,
             result
         )
+    }
+
+    fun getUserData(userId: Int) {
+        repo.getUserData(userId) {
+            setUserData(it)
+        }
     }
 }

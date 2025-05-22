@@ -5,8 +5,9 @@ import com.cmp.microhabit.ui.screen.onboarding.model.UserData
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitPreferenceTime
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitStoppingReason
 import com.google.firebase.firestore.FirebaseFirestore
+import javax.inject.Inject
 
-class OnboardingRepository {
+class OnboardingRepository @Inject constructor () {
     private val db = FirebaseFirestore.getInstance()
 
     fun saveUserData(
@@ -41,5 +42,22 @@ class OnboardingRepository {
             exception.printStackTrace()
             onResult(false, null)
         }
+    }
+
+    fun getUserData(userId: Int, onResult: (UserData?) -> Unit) {
+        db.collection("users").document(userId.toString())
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val userData = document.toObject(UserData::class.java)
+                    onResult(userData)
+                } else {
+                    onResult(null) // No user found
+                }
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+                onResult(null)
+            }
     }
 }
