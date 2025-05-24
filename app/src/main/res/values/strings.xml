@@ -34,4 +34,10 @@
     <string name="insights">Insights</string>
     <string name="profile">Profile</string>
     <string name="quick_start">Quick Start %s</string>
+    <string name="timer_min_sec">%02d:%02d</string>
+    <string name="already_completed">"Already Completed? "</string>
+    <string name="mark_as_done">Mark as Done</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="reset">Reset</string>
 </resources>

@@ -53,6 +53,18 @@ val Typography = Typography(
         fontSize = 20.sp,
         lineHeight = 28.sp,
     ),
+    headlineLarge = TextStyle(
+        fontFamily = WorkSans,
+        fontWeight = FontWeight.W700,
+        fontSize = 32.sp,
+        lineHeight = 28.sp,
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = WorkSans,
+        fontWeight = FontWeight.W600,
+        fontSize = 32.sp,
+        lineHeight = 28.sp,
+    ),
 
     labelSmall = TextStyle(
         fontFamily = WorkSans,

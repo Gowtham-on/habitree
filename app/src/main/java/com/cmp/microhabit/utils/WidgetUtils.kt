@@ -3,6 +3,7 @@ package com.cmp.microhabit.utils
 import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 fun LottieAnimationView(
     @RawRes resId: Int,
     height: Int = 100,
-    width: Int = 100
+    width: Int = 100,
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(resId))
     val progress by animateLottieCompositionAsState(
@@ -43,6 +44,25 @@ fun LottieAnimationView(
             .width(width.dp)
     )
 }
+
+@Composable
+fun LoadLottieWithModifier(
+    @RawRes resId: Int,
+    modifier: Modifier
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(resId))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever
+    )
+
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = modifier
+    )
+}
+
 
 @Composable
 fun ShowLottieWithIterations(
@@ -86,13 +106,13 @@ fun ShowLottieWithIterations(
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = modifier.height(height.dp),
+            modifier = modifier.size(height.dp),
         )
     } else {
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = modifier.height(height.dp),
+            modifier = modifier.size(height.dp),
             dynamicProperties = dynamicProperties
         )
     }

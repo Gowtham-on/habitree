@@ -37,4 +37,6 @@ data class HabitLog(
     val timestamp: Long = 0L,
     val streak: Long = 0L,
     val bestStreak: Long = 0,
+    val noOfTimesCompleted: Long = 0,
+    val spendingMinutes: Long = 0
 )

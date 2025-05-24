@@ -14,6 +14,8 @@ class HomeRepository @Inject constructor() {
         completed: Boolean,
         streak: Long,
         bestStreak: Long,
+        noOfTimesCompleted: Long,
+        spendingMinutes: Long,
         onResult: (Boolean) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()
@@ -24,7 +26,9 @@ class HomeRepository @Inject constructor() {
             completed = completed,
             timestamp = System.currentTimeMillis(),
             streak = streak,
-            bestStreak = bestStreak
+            bestStreak = bestStreak,
+            noOfTimesCompleted = noOfTimesCompleted,
+            spendingMinutes = spendingMinutes,
         )
         db.collection("users")
             .document(userId)

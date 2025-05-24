@@ -42,18 +42,18 @@ class HomeViewmodel @Inject constructor(
         }
     }
 
-    fun setHabitDone(userId: String, habitId: String, onResult: (Boolean) -> Unit) {
+    fun setHabitDone(userId: String, habitId: String, spendingMinutes: Long, onResult: (Boolean) -> Unit) {
 
         var yesterdayLog = logs.value[habitId]
         var log = yesterdayLog?.get(TimeUtils.getYesterday("dd"))
         var streak = 0L
+        var noOfTimesCompleted = 0L
+        var bestStreak = log?.bestStreak ?: 0
+
         if (log?.completed == true) {
             streak = log.streak + 1
-        }
-
-        var bestStreak = log?.bestStreak ?: 0
-        log?.bestStreak?.let {
-            if (it < streak) {
+            noOfTimesCompleted = log.noOfTimesCompleted + 1
+            if (log.bestStreak < streak) {
                 bestStreak = streak
             }
         }
@@ -66,6 +66,8 @@ class HomeViewmodel @Inject constructor(
             date = TimeUtils.getToday("dd"),
             streak = streak,
             bestStreak = bestStreak,
+            noOfTimesCompleted = noOfTimesCompleted,
+            spendingMinutes = spendingMinutes,
             onResult = onResult
         )
     }
