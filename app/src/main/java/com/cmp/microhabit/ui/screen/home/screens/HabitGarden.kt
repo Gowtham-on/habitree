@@ -1,7 +1,6 @@
 package com.cmp.microhabit.ui.screen.home.screens
 
 import android.view.HapticFeedbackConstants
-import android.widget.Toast
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -28,12 +27,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmp.microhabit.R
 import com.cmp.microhabit.ui.component.calendar.GetHabitCalendarView
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
@@ -43,7 +41,11 @@ import com.cmp.microhabit.utils.LottieAnimationView
 import com.cmp.microhabit.utils.SetVerticalGap
 
 @Composable
-fun HabitGarden(viewmodel: HomeViewmodel) {
+fun HabitGarden(
+    viewmodel: HomeViewmodel,
+    onboardingViewmodel: OnboardingViewmodel,
+    userId: String
+) {
     Column(
         modifier = Modifier.padding(horizontal = 10.dp)
     ) {
@@ -52,19 +54,18 @@ fun HabitGarden(viewmodel: HomeViewmodel) {
             style = MaterialTheme.typography.bodyMedium,
         )
         SetVerticalGap(16)
-        GetHabitGarden()
+        GetHabitGarden(onboardingViewmodel, homeViewmodel = viewmodel)
         SetVerticalGap(16)
-        GetStartButton()
+        GetStartButton(viewmodel)
         SetVerticalGap(16)
-        GetHabitCalendarView()
+        GetHabitCalendarView(viewmodel, userId)
         SetVerticalGap(20)
 
     }
 }
 
 @Composable
-fun GetHabitGarden() {
-    val onBoardingViewmodel: OnboardingViewmodel = hiltViewModel()
+fun GetHabitGarden(onBoardingViewmodel: OnboardingViewmodel, homeViewmodel: HomeViewmodel) {
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         onBoardingViewmodel.userData.value.habitPreference.chunked(2).forEach {
@@ -72,9 +73,9 @@ fun GetHabitGarden() {
                 it.forEach {
                     GetHabitGardenItem(
                         modifier = Modifier
-                            .weight(1f)
-                            .height(150.dp),
-                        it
+                            .weight(1f),
+                        it,
+                        homeViewmodel = homeViewmodel
                     )
                 }
             }
@@ -83,19 +84,30 @@ fun GetHabitGarden() {
 }
 
 @Composable
-fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
+fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection, homeViewmodel: HomeViewmodel) {
     val haptic = LocalView.current
 
     Card(
         modifier = modifier
+            .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    homeViewmodel.setSelectedHabit(item)
                 }
+            )
+            .then(
+                if (item.id == homeViewmodel.selectedHabit.value.id)
+                    modifier
+                        .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+                else Modifier
             ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.8f)
+            containerColor = if (item.id == homeViewmodel.selectedHabit.value.id)
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            else
+                Color.White.copy(alpha = 0.8f)
         )
     ) {
         Column(
@@ -107,10 +119,11 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
                 LottieAnimationView(R.raw.workout_lottie, height = 100)
             }
             Text(
-                item.name.drop(3),
+                item.name,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.weight(2f),
-                textAlign = TextAlign.Center, maxLines = 1,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = Color.Black
             )
@@ -119,12 +132,9 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection) {
 }
 
 @Composable
-fun GetStartButton() {
-    val onBoardingViewmodel: OnboardingViewmodel = hiltViewModel()
-    val homeViewmodel: HomeViewmodel = hiltViewModel()
+fun GetStartButton(viewmodel: HomeViewmodel) {
 
     val haptic = LocalView.current
-    val context = LocalContext.current
 
     val infiniteTransition = rememberInfiniteTransition()
     val borderWidth by infiniteTransition.animateFloat(
@@ -160,25 +170,14 @@ fun GetStartButton() {
                     color = MaterialTheme.colorScheme.primary
                 )
                 .clickable(onClick = {
-                    val userData = onBoardingViewmodel.userData.value
                     haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                    homeViewmodel.setHabitDone(
-                        userData.id.toString(),
-                        userData.habitPreference.first().id.toString()
-                    ) {
-                        Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
-                    }
                 }),
         ) {
-            if (onBoardingViewmodel.userData.value.habitPreference.isEmpty()) {
-                return@Box
-            }
             Text(
-                "Quick Start: ${
-                    onBoardingViewmodel.userData.value.habitPreference.first().name.drop(
-                        3
-                    )
-                }",
+                stringResource(
+                    R.string.quick_start,
+                    viewmodel.selectedHabit.value.name
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .padding(horizontal = 10.dp, vertical = 18.dp)

@@ -14,7 +14,7 @@ data class OnboardingData(
 
 @Serializable
 data class HabitSelection (
-    val id: Int = -1,
+    val id: Long = -1L,
     val name: String = "",
     var preferenceTime: Int = 0,
     val logs: List<HabitLog> = emptyList()
@@ -30,6 +30,8 @@ data class UserData (
 
 @Serializable
 data class HabitLog(
+    val habitId: Long = -1L,
+    val dateString: String = "",
     val date: String = "",
     val completed: Boolean = false,
     val timestamp: Long = 0L

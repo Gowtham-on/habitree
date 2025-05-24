@@ -12,11 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
+import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
 import com.cmp.microhabit.utils.SetVerticalGap
 
 @Composable
 fun HomeScreen(viewmodel: HomeViewmodel) {
+    val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
+    val userId = onboardingViewmodel.userData.value.id.toString()
+
     Column(
         modifier = Modifier
             .background(brush = Brush.verticalGradient(
@@ -34,7 +39,7 @@ fun HomeScreen(viewmodel: HomeViewmodel) {
     ) {
         HomeProgressIndicator(viewmodel)
         SetVerticalGap(25)
-        HabitGarden(viewmodel)
+        HabitGarden(viewmodel, onboardingViewmodel, userId)
         SetVerticalGap(100)
     }
 }

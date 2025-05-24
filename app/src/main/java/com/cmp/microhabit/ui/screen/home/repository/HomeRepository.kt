@@ -2,7 +2,6 @@ package com.cmp.microhabit.ui.screen.home.repository
 
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor() {
@@ -11,12 +10,15 @@ class HomeRepository @Inject constructor() {
         userId: String,
         habitId: String,
         date: String,
+        dateString: String,
         completed: Boolean,
         onResult: (Boolean) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()
         val log = HabitLog(
+            habitId = habitId.toLong(),
             date = date,
+            dateString = dateString,
             completed = completed,
             timestamp = System.currentTimeMillis()
         )
@@ -25,7 +27,7 @@ class HomeRepository @Inject constructor() {
             .collection("habits")
             .document(habitId)
             .collection("logs")
-            .document(date)
+            .document(dateString)
             .set(log)
             .addOnSuccessListener { onResult(true) }
             .addOnFailureListener { e ->
@@ -46,8 +48,34 @@ class HomeRepository @Inject constructor() {
             .collection("habits")
             .document(habitId)
             .collection("logs")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .limit(20)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val logs = snapshot.documents.mapNotNull { it.toObject(HabitLog::class.java) }
+
+                onResult(logs)
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+                onResult(null)
+            }
+    }
+
+    fun getLogsFromPreviousSundayToToday(
+        userId: String,
+        habitId: String,
+        startDate: String,
+        endDate: String,
+        onResult: (List<HabitLog>?) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+
+
+        db.collection("users")
+            .document(userId)
+            .collection("habits")
+            .document(habitId)
+            .collection("logs")
+            .limit(15)
             .get()
             .addOnSuccessListener { snapshot ->
                 val logs = snapshot.documents.mapNotNull { it.toObject(HabitLog::class.java) }
@@ -58,5 +86,6 @@ class HomeRepository @Inject constructor() {
                 onResult(null)
             }
     }
+
 
 }

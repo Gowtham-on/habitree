@@ -33,4 +33,5 @@
     <string name="habit_details">Habit Details</string>
     <string name="insights">Insights</string>
     <string name="profile">Profile</string>
+    <string name="quick_start">Quick Start %s</string>
 </resources>

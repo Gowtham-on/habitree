@@ -65,7 +65,6 @@ object OnboardingPreferences {
     }
 
     fun getUserId(context: Context): Flow<String?> {
-        Log.d("userValue", "userId.toString()")
         return context.dataStore.data.map { prefs ->
             prefs[USER_ID]
         }
