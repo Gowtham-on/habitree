@@ -1,11 +1,11 @@
 package com.cmp.microhabit.ui.navigation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,8 +44,6 @@ import com.cmp.microhabit.utils.AppRoutes
 import com.cmp.microhabit.utils.BottomTabItems
 import com.cmp.microhabit.utils.SetVerticalGap
 import com.cmp.microhabit.utils.ShowLottieWithIterations
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 fun NavGraphBuilder.homeGraph() {
     composable(AppRoutes.HOME) {
@@ -77,10 +76,10 @@ fun GetHomeScreens() {
             navController = tabNavController,
             startDestination = "Home",
         ) {
-            composable("Home") { HomeScreen(viewmodel) }
-            composable("Habits") { HomeScreen(viewmodel) }
-            composable("Insights") { HomeScreen(viewmodel) }
-            composable("Profile") { HomeScreen(viewmodel) }
+            composable("Home") { HomeScreen(viewmodel, tabNavController) }
+            composable("Habits") { Text("HabitScreen") }
+            composable("Insights") { Text("Insights") }
+            composable("Profile") { Text("Profile") }
         }
     }
 }
@@ -117,6 +116,9 @@ fun BottomBar(navController: NavController) {
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
+    LaunchedEffect(currentBackStackEntry) {
+        println("Current route in HomeScreen: ${currentBackStackEntry?.destination?.route}")
+    }
     val haptic = LocalView.current
 
     Card(
@@ -136,6 +138,8 @@ fun BottomBar(navController: NavController) {
                         .padding(10.dp)
                         .clickable(
                             onClick = {
+                                Log.d("navHash", navController.hashCode().toString())
+                                Log.d("navHash", item.route)
                                 if (currentRoute != item.route) {
                                     navController.navigate(item.route) {
                                         popUpTo(navController.graph.startDestinationId) {
@@ -174,13 +178,4 @@ fun BottomBar(navController: NavController) {
             }
         }
     }
-}
-
-private object NoRippleInteractionSource : MutableInteractionSource {
-
-    override val interactions: Flow<Interaction> = emptyFlow()
-
-    override suspend fun emit(interaction: Interaction) {}
-
-    override fun tryEmit(interaction: Interaction) = true
 }

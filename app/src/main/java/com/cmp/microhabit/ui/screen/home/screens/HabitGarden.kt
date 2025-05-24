@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.cmp.microhabit.R
 import com.cmp.microhabit.ui.component.calendar.GetHabitCalendarView
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
@@ -44,7 +45,8 @@ import com.cmp.microhabit.utils.SetVerticalGap
 fun HabitGarden(
     viewmodel: HomeViewmodel,
     onboardingViewmodel: OnboardingViewmodel,
-    userId: String
+    userId: String,
+    navController: NavHostController
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 10.dp)
@@ -56,7 +58,7 @@ fun HabitGarden(
         SetVerticalGap(16)
         GetHabitGarden(onboardingViewmodel, homeViewmodel = viewmodel)
         SetVerticalGap(16)
-        GetStartButton(viewmodel)
+        GetStartButton(viewmodel, navController)
         SetVerticalGap(16)
         GetHabitCalendarView(viewmodel, userId)
         SetVerticalGap(20)
@@ -132,7 +134,7 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection, homeViewmodel: 
 }
 
 @Composable
-fun GetStartButton(viewmodel: HomeViewmodel) {
+fun GetStartButton(viewmodel: HomeViewmodel, navController: NavHostController) {
 
     val haptic = LocalView.current
 
@@ -171,6 +173,13 @@ fun GetStartButton(viewmodel: HomeViewmodel) {
                 )
                 .clickable(onClick = {
                     haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    navController.navigate("Habits") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }),
         ) {
             Text(

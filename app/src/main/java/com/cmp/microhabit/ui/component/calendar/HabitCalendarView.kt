@@ -68,7 +68,7 @@ fun GetHabitCalendarView(
     }
 
     LaunchedEffect(viewmodel.selectedHabit.value) {
-        viewmodel.loadLogsFromLastWeek("5", viewmodel.selectedHabit.value.id.toString())
+        viewmodel.loadLogsFromLastWeek(userId, viewmodel.selectedHabit.value.id.toString())
     }
 
     Card(
@@ -166,7 +166,7 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>) {
                     Modifier
                         .border(
                             width = 3.dp,
-                            color =Color(0xFFF4B65C).copy(alpha = alphaValue),
+                            color = Color(0xFFF4B65C).copy(alpha = alphaValue),
                             shape = CircleShape
                         )
                         .padding(all = 3.dp)
