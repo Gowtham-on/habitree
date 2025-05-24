@@ -43,11 +43,19 @@ class HomeViewmodel @Inject constructor(
     }
 
     fun setHabitDone(userId: String, habitId: String, onResult: (Boolean) -> Unit) {
+
         var yesterdayLog = logs.value[habitId]
         var log = yesterdayLog?.get(TimeUtils.getYesterday("dd"))
         var streak = 0L
         if (log?.completed == true) {
             streak = log.streak + 1
+        }
+
+        var bestStreak = log?.bestStreak ?: 0
+        log?.bestStreak?.let {
+            if (it < streak) {
+                bestStreak = streak
+            }
         }
 
         repo.addHabitLog(
@@ -57,6 +65,7 @@ class HomeViewmodel @Inject constructor(
             dateString = "2025-05-${TimeUtils.getToday("dd")}",
             date = TimeUtils.getToday("dd"),
             streak = streak,
+            bestStreak = bestStreak,
             onResult = onResult
         )
     }
@@ -68,8 +77,6 @@ class HomeViewmodel @Inject constructor(
             onResult = onResult
         )
     }
-
-
 
 
 }

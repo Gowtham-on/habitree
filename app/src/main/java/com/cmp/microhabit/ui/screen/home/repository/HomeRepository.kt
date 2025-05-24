@@ -13,6 +13,7 @@ class HomeRepository @Inject constructor() {
         dateString: String,
         completed: Boolean,
         streak: Long,
+        bestStreak: Long,
         onResult: (Boolean) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()
@@ -22,7 +23,8 @@ class HomeRepository @Inject constructor() {
             dateString = dateString,
             completed = completed,
             timestamp = System.currentTimeMillis(),
-            streak = streak
+            streak = streak,
+            bestStreak = bestStreak
         )
         db.collection("users")
             .document(userId)
