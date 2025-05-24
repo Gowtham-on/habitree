@@ -58,7 +58,7 @@ fun HabitGarden(
         SetVerticalGap(16)
         GetHabitGarden(onboardingViewmodel, homeViewmodel = viewmodel)
         SetVerticalGap(16)
-        GetStartButton(viewmodel, navController)
+        GetStartButton(viewmodel, navController, userId)
         SetVerticalGap(16)
         GetHabitCalendarView(viewmodel, userId)
         SetVerticalGap(20)
@@ -134,7 +134,11 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection, homeViewmodel: 
 }
 
 @Composable
-fun GetStartButton(viewmodel: HomeViewmodel, navController: NavHostController) {
+fun GetStartButton(
+    viewmodel: HomeViewmodel,
+    navController: NavHostController,
+    userId: String
+) {
 
     val haptic = LocalView.current
 

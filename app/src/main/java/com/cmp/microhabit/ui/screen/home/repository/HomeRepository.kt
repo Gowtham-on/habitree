@@ -12,6 +12,7 @@ class HomeRepository @Inject constructor() {
         date: String,
         dateString: String,
         completed: Boolean,
+        streak: Long,
         onResult: (Boolean) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()
@@ -20,7 +21,8 @@ class HomeRepository @Inject constructor() {
             date = date,
             dateString = dateString,
             completed = completed,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            streak = streak
         )
         db.collection("users")
             .document(userId)
@@ -63,8 +65,6 @@ class HomeRepository @Inject constructor() {
     fun getLogsFromPreviousSundayToToday(
         userId: String,
         habitId: String,
-        startDate: String,
-        endDate: String,
         onResult: (List<HabitLog>?) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()

@@ -7,10 +7,8 @@ import androidx.lifecycle.ViewModel
 import com.cmp.microhabit.ui.screen.home.repository.HomeRepository
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
+import com.cmp.microhabit.utils.TimeUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,55 +30,46 @@ class HomeViewmodel @Inject constructor(
         _selectedHabit.value = value
     }
 
-    private val _logs = mutableStateOf<Map<String, HabitLog>>(emptyMap())
-    val logs: State<Map<String, HabitLog>> get() = _logs
+    private val _logs = mutableStateOf<Map<String, Map<String, HabitLog>>>(emptyMap())
+    val logs: State<Map<String, Map<String, HabitLog>>> get() = _logs
 
     fun loadLogsFromLastWeek(userId: String, habitId: String) {
+        if (_logs.value.containsKey(habitId)) return // Already cached
+
         getLogsFromLastWeek(userId, habitId) { logs ->
-            val map = logs?.associateBy { it.date.toString() }
-            _logs.value = map ?: emptyMap()
+            val map = logs?.associateBy { it.date.toString() } ?: emptyMap()
+            _logs.value = _logs.value.toMutableMap().apply { put(habitId, map) }
         }
     }
 
     fun setHabitDone(userId: String, habitId: String, onResult: (Boolean) -> Unit) {
+        var yesterdayLog = logs.value[habitId]
+        var log = yesterdayLog?.get(TimeUtils.getYesterday("dd"))
+        var streak = 0L
+        if (log?.completed == true) {
+            streak = log.streak + 1
+        }
+
         repo.addHabitLog(
             userId = userId,
             completed = true,
             habitId = habitId.toString(),
-            dateString = "2025-05-26",
-            date = "14",
+            dateString = "2025-05-${TimeUtils.getToday("dd")}",
+            date = TimeUtils.getToday("dd"),
+            streak = streak,
             onResult = onResult
         )
     }
 
     fun getLogsFromLastWeek(userId: String, habitId: String, onResult: (List<HabitLog>?) -> Unit) {
-        val days = getDateRangeLastSundayToThisSaturday()
-        repo.getLogsFromPreviousSundayToToday (
+        repo.getLogsFromPreviousSundayToToday(
             userId = userId,
             habitId = habitId,
-            startDate = days.first(),
-            endDate = days.last(),
             onResult = onResult
         )
     }
 
 
-    fun getDateRangeLastSundayToThisSaturday(): List<String> {
-        val cal = Calendar.getInstance()
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
 
-        val lastSundayCal = cal.clone() as Calendar
-        lastSundayCal.add(Calendar.DAY_OF_YEAR, -6)
-
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val result = mutableListOf<String>()
-
-        val tempCal = lastSundayCal.clone() as Calendar
-        while (!tempCal.after(cal)) {
-            result.add(sdf.format(tempCal.time))
-            tempCal.add(Calendar.DAY_OF_YEAR, 1)
-        }
-        return result
-    }
 
 }

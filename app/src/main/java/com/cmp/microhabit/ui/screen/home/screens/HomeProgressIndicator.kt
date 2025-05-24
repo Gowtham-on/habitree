@@ -32,17 +32,17 @@ fun HomeProgressIndicator(viewmodel: HomeViewmodel) {
     }
     val floatProgress: Float by animateFloatAsState(
         targetValue = viewmodel.progressPercentage.value,
-        animationSpec = tween(durationMillis = 1000)
+        animationSpec = tween(durationMillis = 2000)
     )
     Column(
-        modifier =  Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box {
             CircularProgressIndicator(
                 progress = { floatProgress },
                 color = MaterialTheme.colorScheme.primary,
-                strokeWidth = 14.dp,
+                strokeWidth = 24.dp,
                 trackColor = Color.Gray,
                 gapSize = Dp.Unspecified,
                 strokeCap = StrokeCap.Round,

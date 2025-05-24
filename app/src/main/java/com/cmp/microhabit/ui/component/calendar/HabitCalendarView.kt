@@ -1,6 +1,5 @@
 package com.cmp.microhabit.ui.component.calendar
 
-import android.os.Build
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -33,10 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
 import com.cmp.microhabit.utils.SetVerticalGap
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.util.Calendar
-import java.util.Locale
+import com.cmp.microhabit.utils.TimeUtils
 
 @Composable
 fun GetHabitCalendarView(
@@ -46,7 +42,7 @@ fun GetHabitCalendarView(
 
     val logs by viewmodel.logs
 
-    val days = getDateRangeLastSundayToThisSaturday()
+    val days = TimeUtils.getDateRangeLastSundayToThisSaturday("dd", 13)
 
     val daysList = remember {
         listOf(
@@ -80,7 +76,7 @@ fun GetHabitCalendarView(
     ) {
         Column {
             Text(
-                getCurrentMonthYear(),
+                TimeUtils.getCurrentMonthYear(),
                 modifier = Modifier
                     .padding(10.dp)
                     .fillMaxWidth(),
@@ -99,13 +95,12 @@ fun GetHabitCalendarView(
                     ) {
                         GetDayText(daysList[index])
                         SetVerticalGap(12)
-                        GetCircularBg(it, logs)
+                        GetCircularBg(it, logs[viewmodel.selectedHabit.value.id.toString()])
                         SetVerticalGap(12)
-                        GetCircularBg((it.toInt() + 7).toString(), logs)
+                        GetCircularBg((it.toInt() + 7).toString(), logs[viewmodel.selectedHabit.value.id.toString()])
                         SetVerticalGap(10)
                     }
                 }
-
             }
             SetVerticalGap(6)
 
@@ -114,32 +109,14 @@ fun GetHabitCalendarView(
     }
 }
 
-fun getDateRangeLastSundayToThisSaturday(): List<String> {
-    val cal = Calendar.getInstance()
-    cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
-
-    val lastSundayCal = cal.clone() as Calendar
-    lastSundayCal.add(Calendar.DAY_OF_YEAR, -13)
-
-    val sdf = SimpleDateFormat("dd", Locale.getDefault())
-    val result = mutableListOf<String>()
-
-    val tempCal = lastSundayCal.clone() as Calendar
-    while (!tempCal.after(cal)) {
-        result.add(sdf.format(tempCal.time))
-        tempCal.add(Calendar.DAY_OF_YEAR, 1)
-    }
-    return result
-}
-
 @Composable
 fun GetDayText(day: String) {
     Text(day, style = MaterialTheme.typography.bodyMedium)
 }
 
 @Composable
-fun GetCircularBg(date: String, logs: Map<String, HabitLog>) {
-    val log = if (logs.contains(date)) {
+fun GetCircularBg(date: String, logs: Map<String, HabitLog>? = mapOf()) {
+    val log = if (logs?.contains(date) == true) {
         logs[date]
     } else {
         HabitLog()
@@ -162,7 +139,7 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>) {
         modifier = Modifier
             .size(35.dp)
             .then(
-                if (isToday(date)) {
+                if (TimeUtils.isToday(date)) {
                     Modifier
                         .border(
                             width = 3.dp,
@@ -178,7 +155,7 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>) {
                 } else {
                     Modifier.background(
                         color = if (log!!.completed) MaterialTheme.colorScheme.primary
-                        else if (isToday(date)) Color.Red
+                        else if (TimeUtils.isToday(date)) Color.Red
                         else Color.Gray,
                         shape = CircleShape
                     )
@@ -197,20 +174,3 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>) {
     }
 }
 
-fun isToday(dateString: String): Boolean {
-    val today = Calendar.getInstance()
-    return today.get(Calendar.DAY_OF_MONTH) == dateString.toInt()
-}
-
-fun getCurrentMonthYear(): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val formatter =
-            java.time.format.DateTimeFormatter.ofPattern("MMM yyyy", Locale.getDefault())
-        val currentDate = LocalDate.now()
-        currentDate.format(formatter)
-    } else {
-        val sdf = java.text.SimpleDateFormat("MMM yyyy", Locale.getDefault())
-        val currentDate = java.util.Calendar.getInstance().time
-        sdf.format(currentDate)
-    }
-}

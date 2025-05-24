@@ -34,5 +34,6 @@ data class HabitLog(
     val dateString: String = "",
     val date: String = "",
     val completed: Boolean = false,
-    val timestamp: Long = 0L
+    val timestamp: Long = 0L,
+    val streak: Long = 0L
 )

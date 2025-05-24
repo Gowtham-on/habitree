@@ -1,7 +1,6 @@
 package com.cmp.microhabit.ui.navigation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -38,6 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cmp.microhabit.R
+import com.cmp.microhabit.ui.screen.habits.screen.HabitsScreen
 import com.cmp.microhabit.ui.screen.home.screens.HomeScreen
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.utils.AppRoutes
@@ -77,7 +77,7 @@ fun GetHomeScreens() {
             startDestination = "Home",
         ) {
             composable("Home") { HomeScreen(viewmodel, tabNavController) }
-            composable("Habits") { Text("HabitScreen") }
+            composable("Habits") { HabitsScreen(viewmodel) }
             composable("Insights") { Text("Insights") }
             composable("Profile") { Text("Profile") }
         }
@@ -138,8 +138,6 @@ fun BottomBar(navController: NavController) {
                         .padding(10.dp)
                         .clickable(
                             onClick = {
-                                Log.d("navHash", navController.hashCode().toString())
-                                Log.d("navHash", item.route)
                                 if (currentRoute != item.route) {
                                     navController.navigate(item.route) {
                                         popUpTo(navController.graph.startDestinationId) {
