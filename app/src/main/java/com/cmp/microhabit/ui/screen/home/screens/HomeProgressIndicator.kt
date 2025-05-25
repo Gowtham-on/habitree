@@ -17,17 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
-import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
 
 @Composable
 fun HomeProgressIndicator(viewmodel: HomeViewmodel) {
-    val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
-    if (!onboardingViewmodel.focusSelection.isEmpty()) {
-        val pref = onboardingViewmodel.userData.value.habitPreference.size
+    if (!viewmodel.habitList.value.isEmpty()) {
+        val pref = viewmodel.habitList.value.size
         if (pref > 0) {
-            viewmodel.setProgress((1f / onboardingViewmodel.userData.value.habitPreference.size.toFloat()))
+            viewmodel.setProgress((1f / viewmodel.habitList.value.size.toFloat()))
         }
     }
     val floatProgress: Float by animateFloatAsState(

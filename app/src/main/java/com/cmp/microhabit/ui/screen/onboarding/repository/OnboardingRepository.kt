@@ -1,19 +1,16 @@
 package com.cmp.microhabit.ui.screen.onboarding.repository
 
-import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
 import com.cmp.microhabit.ui.screen.onboarding.model.UserData
-import com.cmp.microhabit.ui.screen.onboarding.utils.HabitPreferenceTime
 import com.cmp.microhabit.ui.screen.onboarding.utils.HabitStoppingReason
+import com.cmp.microhabit.utils.DbRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
-class OnboardingRepository @Inject constructor () {
+class OnboardingRepository @Inject constructor() {
     private val db = FirebaseFirestore.getInstance()
 
-    fun saveUserData(
-        habitPref: List<HabitSelection>,
+    fun registerUser(
         habitStoppingReason: List<HabitStoppingReason>,
-        habitPrefTime: HabitPreferenceTime,
         onResult: (Boolean, Int?) -> Unit
     ) {
         val counterRef = db.collection("counter").document("users")
@@ -26,14 +23,11 @@ class OnboardingRepository @Inject constructor () {
             val userData = UserData(
                 id = newId,
                 userName = "User $newId",
-                habitPreference = habitPref,
                 habitStoppingReason = habitStoppingReason,
-                habitPrefTime = habitPrefTime
             )
 
             val userRef = db.collection("users").document(newId.toString())
             transaction.set(userRef, userData)
-
             transaction.update(counterRef, "lastUserId", newId)
             newId.toInt()
         }.addOnSuccessListener { newUserId ->
@@ -44,20 +38,14 @@ class OnboardingRepository @Inject constructor () {
         }
     }
 
-    fun getUserData(userId: Int, onResult: (UserData?) -> Unit) {
-        db.collection("users").document(userId.toString())
-            .get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val userData = document.toObject(UserData::class.java)
-                    onResult(userData)
-                } else {
-                    onResult(null) // No user found
-                }
-            }
-            .addOnFailureListener {
-                it.printStackTrace()
+    fun getUserData(userId: String, onResult: (data: UserData?) -> Unit) {
+        DbRepository.getCurrentUser(db, userId).get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val userData = document.toObject(UserData::class.java)
+                onResult(userData)
+            } else {
                 onResult(null)
             }
+        }
     }
 }

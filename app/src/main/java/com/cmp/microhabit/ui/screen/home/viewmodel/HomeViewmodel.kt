@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.cmp.microhabit.ui.screen.home.repository.HomeRepository
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
-import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
-import com.cmp.microhabit.utils.TimeUtils
+import com.cmp.microhabit.ui.screen.onboarding.model.Statistics
+import com.cmp.microhabit.ui.screen.onboarding.model.UserHabit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -16,6 +16,8 @@ class HomeViewmodel @Inject constructor(
     private val repo: HomeRepository,
 ) : ViewModel() {
 
+    var userId = ""
+
     private var _progressPercentage = mutableFloatStateOf(0f)
     val progressPercentage: State<Float> get() = _progressPercentage
 
@@ -23,62 +25,60 @@ class HomeViewmodel @Inject constructor(
         _progressPercentage.floatValue = value
     }
 
-    private var _selectedHabit = mutableStateOf<HabitSelection>(HabitSelection())
-    val selectedHabit: State<HabitSelection> get() = _selectedHabit
+    private var _selectedHabit = mutableStateOf<UserHabit>(UserHabit())
+    val selectedHabit: State<UserHabit> get() = _selectedHabit
 
-    fun setSelectedHabit(value: HabitSelection) {
+    fun setSelectedHabit(value: UserHabit) {
         _selectedHabit.value = value
     }
 
-    private val _logs = mutableStateOf<Map<String, Map<String, HabitLog>>>(emptyMap())
-    val logs: State<Map<String, Map<String, HabitLog>>> get() = _logs
+    private var _logsList = mutableStateOf<Map<String, HabitLog>>(mapOf())
+    val logs: State<Map<String, HabitLog>> get() = _logsList
 
-    fun loadLogsFromLastWeek(userId: String, habitId: String) {
-        if (_logs.value.containsKey(habitId)) return // Already cached
+    fun loadLogsForHabit(habitId: String) {
 
-        getLogsFromLastWeek(userId, habitId) { logs ->
-            val map = logs?.associateBy { it.date.toString() } ?: emptyMap()
-            _logs.value = _logs.value.toMutableMap().apply { put(habitId, map) }
+        if (habitId == "-1") {
+            return
         }
-    }
+        if (_logsList.value.contains(habitId)) {
+            return
+        }
+        repo.getRecentLogs(userId, habitId) { log ->
 
-    fun setHabitDone(userId: String, habitId: String, spendingMinutes: Long, onResult: (Boolean) -> Unit) {
-
-        var yesterdayLog = logs.value[habitId]
-        var log = yesterdayLog?.get(TimeUtils.getYesterday("dd"))
-        var streak = 0L
-        var noOfTimesCompleted = 0L
-        var bestStreak = log?.bestStreak ?: 0
-
-        if (log?.completed == true) {
-            streak = log.streak + 1
-            noOfTimesCompleted = log.noOfTimesCompleted + 1
-            if (log.bestStreak < streak) {
-                bestStreak = streak
+            if (log != null) {
+                _logsList.value = _logsList.value.toMutableMap().apply {
+                    put(habitId, log)
+                }
             }
         }
-
-        repo.addHabitLog(
-            userId = userId,
-            completed = true,
-            habitId = habitId.toString(),
-            dateString = "2025-05-${TimeUtils.getToday("dd")}",
-            date = TimeUtils.getToday("dd"),
-            streak = streak,
-            bestStreak = bestStreak,
-            noOfTimesCompleted = noOfTimesCompleted,
-            spendingMinutes = spendingMinutes,
-            onResult = onResult
-        )
     }
 
-    fun getLogsFromLastWeek(userId: String, habitId: String, onResult: (List<HabitLog>?) -> Unit) {
-        repo.getLogsFromPreviousSundayToToday(
-            userId = userId,
-            habitId = habitId,
-            onResult = onResult
-        )
+    private var _habitStatistics = mutableStateOf<Map<String, Statistics>?>(mapOf())
+    val habitStatistics: State<Map<String, Statistics>?> get() = _habitStatistics
+
+    fun loadHabitStatistics(habitId: String) {
+        if (habitId.isEmpty() || habitId == "-1") {
+            return
+        }
+        if(_habitStatistics.value?.contains(habitId) == true) {
+            return
+        }
+        repo.getHabitStatistics(userId, habitId) { statistics ->
+            if (statistics != null) {
+                _habitStatistics.value = _habitStatistics.value?.toMutableMap()?.apply {
+                    put(habitId, statistics)
+                }
+            }
+        }
     }
 
+    private val _habitList = mutableStateOf<List<UserHabit>>(listOf())
+    var habitList: State<List<UserHabit>> = _habitList
 
+    fun getHabitList() {
+        if (userId.isEmpty()) return
+        repo.getHabitList(userId) {
+            _habitList.value = it
+        }
+    }
 }

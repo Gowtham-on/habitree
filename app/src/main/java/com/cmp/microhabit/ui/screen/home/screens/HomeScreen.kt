@@ -21,7 +21,8 @@ import com.cmp.microhabit.utils.SetVerticalGap
 @Composable
 fun HomeScreen(viewmodel: HomeViewmodel, navController: NavHostController) {
     val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
-    val userId = onboardingViewmodel.userData.value.id.toString()
+//    val userId = onboardingViewmodel.userData.value.id.toString()
+    val userId = 6.toString()
 
     Column(
         modifier = Modifier
@@ -41,7 +42,7 @@ fun HomeScreen(viewmodel: HomeViewmodel, navController: NavHostController) {
     ) {
         HomeProgressIndicator(viewmodel)
         SetVerticalGap(25)
-        HabitGarden(viewmodel, onboardingViewmodel, userId, navController)
+        HabitGarden(viewmodel, userId, navController)
         SetVerticalGap(100)
     }
 }

@@ -2,6 +2,7 @@ package com.cmp.microhabit.ui.screen.habits.screen
 
 import TimerViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,14 +23,24 @@ import androidx.compose.ui.unit.dp
 import com.cmp.microhabit.R
 import com.cmp.microhabit.ui.component.button.ButtonAnimation
 import com.cmp.microhabit.ui.component.button.MhButton
+import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.utils.SetVerticalGap
 import com.cmp.microhabit.utils.ShowLottieWithIterations
 
 @Composable
-fun GetHabitTimerCard(spendingMinutes: Long) {
-    val countdownViewModel =
-        remember { TimerViewModel(initialSeconds = spendingMinutes.toInt() * 60) }
+fun GetHabitTimerCard(homeViewmodel: HomeViewmodel, id: Long) {
 
+    val countdownViewModel =
+        remember {
+            TimerViewModel(
+                initialSeconds = homeViewmodel.selectedHabit.value.timeForHabit.toInt().times(60)
+            )
+        }
+
+    LaunchedEffect(homeViewmodel.selectedHabit.value) {
+        countdownViewModel.stop()
+        countdownViewModel.secondsLeft = homeViewmodel.selectedHabit.value.timeForHabit.toInt().times(60)
+    }
     val seconds = countdownViewModel.secondsLeft
 
     val formatted = String.format(
@@ -94,7 +106,9 @@ fun GetHabitTimerCard(spendingMinutes: Long) {
                     stringResource(R.string.mark_as_done),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable(onClick = {
+                    })
                 )
             }
         }

@@ -23,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,18 +37,22 @@ import androidx.navigation.NavHostController
 import com.cmp.microhabit.R
 import com.cmp.microhabit.ui.component.calendar.GetHabitCalendarView
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
-import com.cmp.microhabit.ui.screen.onboarding.model.HabitSelection
-import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
+import com.cmp.microhabit.ui.screen.onboarding.model.UserHabit
 import com.cmp.microhabit.utils.LottieAnimationView
 import com.cmp.microhabit.utils.SetVerticalGap
 
 @Composable
 fun HabitGarden(
     viewmodel: HomeViewmodel,
-    onboardingViewmodel: OnboardingViewmodel,
     userId: String,
     navController: NavHostController
 ) {
+
+    LaunchedEffect(userId) {
+        viewmodel.userId = userId
+        viewmodel.getHabitList()
+    }
+
     Column(
         modifier = Modifier.padding(horizontal = 10.dp)
     ) {
@@ -56,21 +61,21 @@ fun HabitGarden(
             style = MaterialTheme.typography.bodyMedium,
         )
         SetVerticalGap(16)
-        GetHabitGarden(onboardingViewmodel, homeViewmodel = viewmodel)
+        GetHabitGarden(homeViewmodel = viewmodel)
         SetVerticalGap(16)
         GetStartButton(viewmodel, navController, userId)
         SetVerticalGap(16)
-        GetHabitCalendarView(viewmodel, userId)
+        GetHabitCalendarView(viewmodel)
         SetVerticalGap(20)
 
     }
 }
 
 @Composable
-fun GetHabitGarden(onBoardingViewmodel: OnboardingViewmodel, homeViewmodel: HomeViewmodel) {
+fun GetHabitGarden(homeViewmodel: HomeViewmodel) {
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        onBoardingViewmodel.userData.value.habitPreference.chunked(2).forEach {
+        homeViewmodel.habitList.value.chunked(2).map {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 it.forEach {
                     GetHabitGardenItem(
@@ -86,7 +91,7 @@ fun GetHabitGarden(onBoardingViewmodel: OnboardingViewmodel, homeViewmodel: Home
 }
 
 @Composable
-fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection, homeViewmodel: HomeViewmodel) {
+fun GetHabitGardenItem(modifier: Modifier, item: UserHabit, homeViewmodel: HomeViewmodel) {
     val haptic = LocalView.current
 
     Card(
@@ -97,16 +102,17 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection, homeViewmodel: 
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                     homeViewmodel.setSelectedHabit(item)
+                    homeViewmodel.loadHabitStatistics(item.habitId.toString())
                 }
             )
             .then(
-                if (item.id == homeViewmodel.selectedHabit.value.id)
+                if (item.habitId == homeViewmodel.selectedHabit.value.habitId)
                     modifier
                         .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                 else Modifier
             ),
         colors = CardDefaults.cardColors(
-            containerColor = if (item.id == homeViewmodel.selectedHabit.value.id)
+            containerColor = if (item.habitId == homeViewmodel.selectedHabit.value.habitId)
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             else
                 Color.White.copy(alpha = 0.8f)
@@ -121,7 +127,7 @@ fun GetHabitGardenItem(modifier: Modifier, item: HabitSelection, homeViewmodel: 
                 LottieAnimationView(R.raw.workout_lottie, height = 100)
             }
             Text(
-                item.name,
+                item.habitName,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.weight(2f),
                 textAlign = TextAlign.Center,
@@ -189,7 +195,7 @@ fun GetStartButton(
             Text(
                 stringResource(
                     R.string.quick_start,
-                    viewmodel.selectedHabit.value.name
+                    viewmodel.selectedHabit.value.habitName
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier

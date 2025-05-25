@@ -37,12 +37,10 @@ import com.cmp.microhabit.utils.TimeUtils
 @Composable
 fun GetHabitCalendarView(
     viewmodel: HomeViewmodel,
-    userId: String
 ) {
 
-    val logs by viewmodel.logs
 
-    val days = TimeUtils.getDateRangeLastSundayToThisSaturday("dd", 13)
+    val days = TimeUtils.getDateRangeLastSundayToThisSaturday("dd-MM-YYYY", 13)
 
     val daysList = remember {
         listOf(
@@ -63,8 +61,11 @@ fun GetHabitCalendarView(
         )
     }
 
+    val logs by viewmodel.logs
+    val habitLog = logs[viewmodel.selectedHabit.value.habitId.toString()]
+
     LaunchedEffect(viewmodel.selectedHabit.value) {
-        viewmodel.loadLogsFromLastWeek(userId, viewmodel.selectedHabit.value.id.toString())
+        viewmodel.loadLogsForHabit(viewmodel.selectedHabit.value.habitId.toString())
     }
 
     Card(
@@ -95,9 +96,12 @@ fun GetHabitCalendarView(
                     ) {
                         GetDayText(daysList[index])
                         SetVerticalGap(12)
-                        GetCircularBg(it, logs[viewmodel.selectedHabit.value.id.toString()])
+                        GetCircularBg(it, habitLog?.dateLogs ?: mapOf())
                         SetVerticalGap(12)
-                        GetCircularBg((it.toInt() + 7).toString(), logs[viewmodel.selectedHabit.value.id.toString()])
+                        GetCircularBg(
+                            "${it.take(2).toInt() + 7}" + it.drop(2),
+                            habitLog?.dateLogs ?: mapOf()
+                        )
                         SetVerticalGap(10)
                     }
                 }
@@ -115,9 +119,9 @@ fun GetDayText(day: String) {
 }
 
 @Composable
-fun GetCircularBg(date: String, logs: Map<String, HabitLog>? = mapOf()) {
-    val log = if (logs?.contains(date) == true) {
-        logs[date]
+fun GetCircularBg(date: String, dateLogs: Map<String, Boolean>) {
+    val isCompleted = if (dateLogs.contains(date) == true) {
+        dateLogs[date]
     } else {
         HabitLog()
     }
@@ -139,7 +143,7 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>? = mapOf()) {
         modifier = Modifier
             .size(35.dp)
             .then(
-                if (TimeUtils.isToday(date)) {
+                if (TimeUtils.isToday(date.take(2))) {
                     Modifier
                         .border(
                             width = 3.dp,
@@ -154,8 +158,8 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>? = mapOf()) {
 
                 } else {
                     Modifier.background(
-                        color = if (log!!.completed) MaterialTheme.colorScheme.primary
-                        else if (TimeUtils.isToday(date)) Color.Red
+                        color = if (isCompleted == true) MaterialTheme.colorScheme.primary
+                        else if (TimeUtils.isToday(date.take(2))) Color.Red
                         else Color.Gray,
                         shape = CircleShape
                     )
@@ -163,7 +167,7 @@ fun GetCircularBg(date: String, logs: Map<String, HabitLog>? = mapOf()) {
             )
     ) {
         Text(
-            date,
+            date.take(2),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White,
             textAlign = TextAlign.Center,

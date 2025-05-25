@@ -13,30 +13,30 @@ data class OnboardingData(
 )
 
 @Serializable
-data class HabitSelection (
+data class HabitSelection(
     val id: Long = -1L,
     val name: String = "",
     var preferenceTime: Int = 0,
-    val logs: List<HabitLog> = emptyList()
 )
 
-data class UserData (
+data class UserData(
     val id: Long = -1,
     val userName: String = "",
-    val habitPreference: List<HabitSelection> = listOf<HabitSelection>(),
     val habitStoppingReason: List<HabitStoppingReason> = listOf<HabitStoppingReason>(),
-    val habitPrefTime: HabitPreferenceTime = HabitPreferenceTime.NONE,
 )
 
-@Serializable
-data class HabitLog(
-    val habitId: Long = -1L,
-    val dateString: String = "",
-    val date: String = "",
-    val completed: Boolean = false,
-    val timestamp: Long = 0L,
-    val streak: Long = 0L,
-    val bestStreak: Long = 0,
-    val noOfTimesCompleted: Long = 0,
-    val spendingMinutes: Long = 0
+data class UserHabit(
+    val habitName: String = "",
+    val habitId: Int = -1,
+    val timeForHabit: Int = 0
+)
+
+data class HabitLog (
+    val dateLogs: Map<String, Boolean> = mapOf(),
+)
+
+data class Statistics (
+    val currentStreak: Int = 0,
+    val noOfTimesCompleted: Int = 0,
+    val bestStreak: Int = 0,
 )

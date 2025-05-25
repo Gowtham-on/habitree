@@ -29,8 +29,8 @@ class OnboardingViewmodel @Inject constructor(
 ) : ViewModel() {
 
     init {
-        getOnBoardingData(context)
-        getUserId(context)
+        getOnBoardingDataFromPref(context)
+        getUserIdFromRemote(context)
     }
 
     private val _focusSelection = mutableStateListOf<HabitSelection>()
@@ -76,13 +76,12 @@ class OnboardingViewmodel @Inject constructor(
             SharingStarted.Eagerly, null
         )
 
+    // Db related variables
     private val _userData = mutableStateOf<UserData>(
         UserData(
             id = -1L,
             userName = "",
-            habitPreference = emptyList(),
             habitStoppingReason = emptyList(),
-            habitPrefTime = HabitPreferenceTime.NONE
         )
     )
     val userData: State<UserData> get() = _userData
@@ -92,7 +91,6 @@ class OnboardingViewmodel @Inject constructor(
             _userData.value = value
         }
     }
-
 
     fun setOnboardingDone() {
         val onboardingData = OnboardingData(
@@ -113,8 +111,7 @@ class OnboardingViewmodel @Inject constructor(
         }
     }
 
-
-    fun getOnBoardingData(context: Context) {
+    fun getOnBoardingDataFromPref(context: Context) {
         viewModelScope.launch {
             OnboardingPreferences.getOnboardingData(context).collect {
                 if (it == null) return@collect
@@ -130,27 +127,25 @@ class OnboardingViewmodel @Inject constructor(
         }
     }
 
-    fun getUserId(context: Context) {
+    fun getUserIdFromRemote(context: Context) {
         viewModelScope.launch {
             OnboardingPreferences.getUserId(context).collect {
                 if (it == null) return@collect
-                getUserData(it.toInt())
+                getUserData(it.toString())
             }
         }
     }
 
     fun addUserData(result: (Boolean, Int?) -> Unit) {
         focusSelection.map { it.preferenceTime = timeSelection.value }
-        repo.saveUserData(
-            focusSelection,
+        repo.registerUser (
             habitStoppingReason,
-            habitPreferenceTime.value,
             result
         )
     }
 
-    fun getUserData(userId: Int) {
-        repo.getUserData(userId) {
+    fun getUserData(userId: String) {
+        repo.getUserData(userId.toString()) {
             setUserData(it)
         }
     }

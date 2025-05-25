@@ -1,97 +1,62 @@
 package com.cmp.microhabit.ui.screen.home.repository
 
+import android.util.Log
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
+import com.cmp.microhabit.ui.screen.onboarding.model.Statistics
+import com.cmp.microhabit.ui.screen.onboarding.model.UserHabit
+import com.cmp.microhabit.utils.DbRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor() {
+    val db = FirebaseFirestore.getInstance()
 
-    fun addHabitLog(
-        userId: String,
-        habitId: String,
-        date: String,
-        dateString: String,
-        completed: Boolean,
-        streak: Long,
-        bestStreak: Long,
-        noOfTimesCompleted: Long,
-        spendingMinutes: Long,
-        onResult: (Boolean) -> Unit
-    ) {
-        val db = FirebaseFirestore.getInstance()
-        val log = HabitLog(
-            habitId = habitId.toLong(),
-            date = date,
-            dateString = dateString,
-            completed = completed,
-            timestamp = System.currentTimeMillis(),
-            streak = streak,
-            bestStreak = bestStreak,
-            noOfTimesCompleted = noOfTimesCompleted,
-            spendingMinutes = spendingMinutes,
-        )
-        db.collection("users")
-            .document(userId)
-            .collection("habits")
-            .document(habitId)
-            .collection("logs")
-            .document(dateString)
-            .set(log)
-            .addOnSuccessListener { onResult(true) }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
-                onResult(false)
+    fun getHabitList(userId: String, onResult: (List<UserHabit>) -> Unit) {
+        DbRepository.getHabitsList(db, userId)
+            .get()
+            .addOnSuccessListener { result ->
+                val habitList = result.documents.mapNotNull { it.toObject(UserHabit::class.java) }
+                onResult(habitList)
             }
     }
 
-    fun getHabitLogs(
+    fun addLog(userId: String, habitId: String, habitLog: HabitLog) {
+        DbRepository.getHabitLogs(db, userId, habitId).update("dateLogs", habitLog.dateLogs)
+    }
+
+    fun getRecentLogs(
         userId: String,
         habitId: String,
-        onResult: (List<HabitLog>?) -> Unit
+        onResult: (HabitLog?) -> Unit
     ) {
-        val db = FirebaseFirestore.getInstance()
-
-        db.collection("users")
-            .document(userId)
-            .collection("habits")
-            .document(habitId)
-            .collection("logs")
+        DbRepository.getHabitLogs(db, userId, habitId)
             .get()
-            .addOnSuccessListener { snapshot ->
-                val logs = snapshot.documents.mapNotNull { it.toObject(HabitLog::class.java) }
-
-                onResult(logs)
-            }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val userData = document.toObject(HabitLog::class.java)
+                    onResult(userData)
+                } else {
+                    onResult(null)
+                }
+            }.addOnFailureListener {
+                Log.d("ErrorLog", it.message.toString())
                 onResult(null)
             }
     }
 
-    fun getLogsFromPreviousSundayToToday(
-        userId: String,
-        habitId: String,
-        onResult: (List<HabitLog>?) -> Unit
-    ) {
-        val db = FirebaseFirestore.getInstance()
-
-
-        db.collection("users")
-            .document(userId)
-            .collection("habits")
-            .document(habitId)
-            .collection("logs")
-            .limit(15)
+    fun getHabitStatistics(userId: String, habitId: String, onResult: (Statistics?) -> Unit) {
+        DbRepository.getHabitStatistics(db, userId, habitId)
             .get()
-            .addOnSuccessListener { snapshot ->
-                val logs = snapshot.documents.mapNotNull { it.toObject(HabitLog::class.java) }
-                onResult(logs)
-            }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
+            .addOnSuccessListener {
+                if (it.exists()) {
+                    val statistics = it.toObject(Statistics::class.java)
+                    onResult(statistics)
+                } else {
+                    onResult(null)
+                }
+            }.addOnFailureListener {
+                Log.d("ErrorLog", it.message.toString())
                 onResult(null)
             }
     }
-
-
 }

@@ -19,7 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,32 +31,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmp.microhabit.R
-import com.cmp.microhabit.ui.screen.habits.viewmodel.HabitsViewmodel
+import com.cmp.microhabit.ui.component.dropdown.MhDropdownMenu
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
-import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
+import com.cmp.microhabit.ui.screen.onboarding.model.Statistics
+import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
 import com.cmp.microhabit.utils.LoadLottieWithModifier
 import com.cmp.microhabit.utils.SetVerticalGap
-import com.cmp.microhabit.utils.TimeUtils
 
 @Composable
 fun HabitsScreen(homeViewmodel: HomeViewmodel) {
-    val habitsViewmodel: HabitsViewmodel = hiltViewModel()
+    val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
 
     val selectedHabit = homeViewmodel.selectedHabit.value
-    val habitMap = if (selectedHabit.id == -1L && homeViewmodel.logs.value.toList().isNotEmpty())
-        homeViewmodel.logs.value.toList().first().second
-    else
-        homeViewmodel.logs.value[selectedHabit.id.toString()]
+    val habitMap =
+        if (selectedHabit.habitId == -1 && homeViewmodel.logs.value.toList().isNotEmpty())
+            homeViewmodel.logs.value.toList().first().second
+        else
+            homeViewmodel.logs.value[selectedHabit.habitId.toString()]
 
-    val currentHabit = habitMap?.get(TimeUtils.getToday("dd"))
 
     Column(
         modifier = Modifier
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFE6F8F1), // #e6f8f1
-                        Color(0xFFC6F5DE)  // #c6f5de
+                        Color(0xFFE6F8F1),
+                        Color(0xFFC6F5DE)
                     )
                 )
             )
@@ -63,32 +66,65 @@ fun HabitsScreen(homeViewmodel: HomeViewmodel) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
     ) {
-        GetStreakDetails(homeViewmodel, currentHabit)
+        GetHabitsDropdown(homeViewmodel)
         SetVerticalGap(20)
-        GetHabitTimerCard(currentHabit?.spendingMinutes ?: 0)
+        GetStreakDetails(homeViewmodel)
+        SetVerticalGap(20)
+        GetHabitTimerCard(homeViewmodel, onboardingViewmodel.userData.value.id)
     }
 }
 
+@Composable
+fun GetHabitsDropdown(homeViewmodel: HomeViewmodel) {
+    val habits = homeViewmodel.habitList.value.map {
+        it.habitName
+    }
+    var selectedIdx by remember { mutableIntStateOf(homeViewmodel.habitList.value.indexOf(homeViewmodel.selectedHabit.value),) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
+        MhDropdownMenu(
+            items = habits,
+            selectedIndex = selectedIdx,
+            onItemSelected = {
+                selectedIdx = it
+                homeViewmodel.setSelectedHabit(
+                    homeViewmodel.habitList.value[selectedIdx]
+                )
+                homeViewmodel.loadHabitStatistics(homeViewmodel.habitList.value[selectedIdx].habitId.toString())
+            },
+            textFieldStyle = MaterialTheme.typography.bodyMedium,
+            dropdownItemsStyle = MaterialTheme.typography.bodySmall,
+            canShowLabel = false,
+            fieldWidth = Integer.MAX_VALUE
+        )
+    }
+}
 
 @Composable
-fun GetStreakDetails(homeViewmodel: HomeViewmodel, currentHabit: HabitLog?) {
+fun GetStreakDetails(homeViewmodel: HomeViewmodel) {
 
+    val selectedHabit = homeViewmodel.selectedHabit.value
+    val streakDetails =
+        homeViewmodel.habitStatistics.value?.get(selectedHabit.habitId.toString()) ?: Statistics()
 
     val streakAnim = remember { Animatable(0f) }
     val bestStreak = remember { Animatable(0f) }
     val noOfTimesCompleted = remember { Animatable(0f) }
 
-    LaunchedEffect(homeViewmodel.selectedHabit.value) {
+    LaunchedEffect(homeViewmodel.selectedHabit.value, homeViewmodel.habitStatistics.value) {
         streakAnim.animateTo(
-            targetValue = currentHabit?.streak?.toFloat() ?: 0f,
+            targetValue = streakDetails.currentStreak.toFloat(),
             animationSpec = tween(durationMillis = 500)
         )
         bestStreak.animateTo(
-            targetValue = currentHabit?.bestStreak?.toFloat() ?: 0f,
+            targetValue = streakDetails.bestStreak.toFloat(),
             animationSpec = tween(durationMillis = 500)
         )
         noOfTimesCompleted.animateTo(
-            targetValue = currentHabit?.noOfTimesCompleted?.toFloat() ?: 0f,
+            targetValue = streakDetails.noOfTimesCompleted.toFloat(),
             animationSpec = tween(durationMillis = 500)
         )
     }
@@ -137,7 +173,9 @@ fun ConstructStreakCard(
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth().background(color = Color.White),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.White),
             verticalAlignment = Alignment.CenterVertically
         ) {
             LoadLottieWithModifier(

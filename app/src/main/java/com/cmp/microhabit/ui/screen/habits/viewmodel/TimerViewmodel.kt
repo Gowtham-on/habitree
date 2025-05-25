@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class TimerViewModel(initialSeconds: Int) : ViewModel() {
     var secondsLeft by mutableIntStateOf(initialSeconds)
-        private set
 
     private var timerJob: Job? = null
     private var isPaused = false
