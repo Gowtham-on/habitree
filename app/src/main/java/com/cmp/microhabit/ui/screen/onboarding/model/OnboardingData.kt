@@ -40,3 +40,7 @@ data class Statistics (
     val noOfTimesCompleted: Int = 0,
     val bestStreak: Int = 0,
 )
+
+data class StreakChartDetails (
+    val streaks: Map<String, Int> = mapOf()
+)

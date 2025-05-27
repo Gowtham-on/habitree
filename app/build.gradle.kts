@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.cmp.microhabit"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -80,6 +80,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx) // If using authentication
     implementation(libs.firebase.firestore.ktx)
-
-
+    implementation("io.github.bytebeats:compose-charts:0.2.1")
+    implementation("com.wajahatkarim:flippable:1.5.4")
 }

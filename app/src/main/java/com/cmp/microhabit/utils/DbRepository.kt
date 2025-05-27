@@ -21,4 +21,8 @@ object DbRepository {
     fun getHabitStatistics(db: FirebaseFirestore, userId: String, habitId: String): DocumentReference {
         return getHabitsList(db, userId).document("habit_$habitId").collection("habit_info").document("statistics")
     }
+
+    fun getChartDetails(db: FirebaseFirestore, userId: String, habitId: String): DocumentReference {
+        return getHabitsList(db, userId).document("habit_$habitId").collection("habit_info").document("chartDetails")
+    }
 }

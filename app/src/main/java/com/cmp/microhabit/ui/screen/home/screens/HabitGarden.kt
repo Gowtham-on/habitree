@@ -102,7 +102,7 @@ fun GetHabitGardenItem(modifier: Modifier, item: UserHabit, homeViewmodel: HomeV
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                     homeViewmodel.setSelectedHabit(item)
-                    homeViewmodel.loadHabitStatistics(item.habitId.toString())
+                    homeViewmodel.getAllHabitDetails(item.habitId.toString())
                 }
             )
             .then(

@@ -5,12 +5,14 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -43,12 +45,14 @@ fun HabitsScreen(homeViewmodel: HomeViewmodel) {
     val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
 
     val selectedHabit = homeViewmodel.selectedHabit.value
-    val habitMap =
-        if (selectedHabit.habitId == -1 && homeViewmodel.logs.value.toList().isNotEmpty())
-            homeViewmodel.logs.value.toList().first().second
-        else
-            homeViewmodel.logs.value[selectedHabit.habitId.toString()]
 
+    LaunchedEffect(Unit) {
+        if (selectedHabit.habitId == -1 && homeViewmodel.habitList.value.isNotEmpty()) {
+            val firstHabit = homeViewmodel.habitList.value[0]
+            homeViewmodel.setSelectedHabit(firstHabit)
+            homeViewmodel.getAllHabitDetails(firstHabit.habitId.toString())
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -67,10 +71,16 @@ fun HabitsScreen(homeViewmodel: HomeViewmodel) {
         verticalArrangement = Arrangement.Top,
     ) {
         GetHabitsDropdown(homeViewmodel)
-        SetVerticalGap(20)
+        SetVerticalGap(16)
+        GetHabitOverviewCard(homeViewmodel)
+        SetVerticalGap(16)
         GetStreakDetails(homeViewmodel)
-        SetVerticalGap(20)
+        SetVerticalGap(16)
         GetHabitTimerCard(homeViewmodel, onboardingViewmodel.userData.value.id)
+        SetVerticalGap(16)
+        GetHabitLineChart(homeViewmodel)
+        SetVerticalGap(100)
+
     }
 }
 
@@ -79,27 +89,39 @@ fun GetHabitsDropdown(homeViewmodel: HomeViewmodel) {
     val habits = homeViewmodel.habitList.value.map {
         it.habitName
     }
-    var selectedIdx by remember { mutableIntStateOf(homeViewmodel.habitList.value.indexOf(homeViewmodel.selectedHabit.value),) }
+
+    var selectedIdx by remember(homeViewmodel.selectedHabit.value) {
+        mutableIntStateOf(
+            homeViewmodel.habitList.value.indexOf(
+                homeViewmodel.selectedHabit.value
+            ),
+        )
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
     ) {
-        MhDropdownMenu(
-            items = habits,
-            selectedIndex = selectedIdx,
-            onItemSelected = {
-                selectedIdx = it
-                homeViewmodel.setSelectedHabit(
-                    homeViewmodel.habitList.value[selectedIdx]
-                )
-                homeViewmodel.loadHabitStatistics(homeViewmodel.habitList.value[selectedIdx].habitId.toString())
-            },
-            textFieldStyle = MaterialTheme.typography.bodyMedium,
-            dropdownItemsStyle = MaterialTheme.typography.bodySmall,
-            canShowLabel = false,
-            fieldWidth = Integer.MAX_VALUE
-        )
+        Box(
+            modifier = Modifier.width(240.dp),
+        ) {
+            MhDropdownMenu(
+                items = habits,
+                selectedIndex = selectedIdx,
+                onItemSelected = {
+                    selectedIdx = it
+                    homeViewmodel.setSelectedHabit(
+                        homeViewmodel.habitList.value[selectedIdx]
+                    )
+                    homeViewmodel.getAllHabitDetails(homeViewmodel.habitList.value[selectedIdx].habitId.toString())
+                },
+                textFieldStyle = MaterialTheme.typography.bodyMedium,
+                dropdownItemsStyle = MaterialTheme.typography.bodySmall,
+                canShowLabel = false,
+                fieldWidth = Integer.MAX_VALUE,
+                fieldColor = Color.White
+            )
+        }
     }
 }
 

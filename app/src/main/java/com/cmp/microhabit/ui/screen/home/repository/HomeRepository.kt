@@ -3,6 +3,7 @@ package com.cmp.microhabit.ui.screen.home.repository
 import android.util.Log
 import com.cmp.microhabit.ui.screen.onboarding.model.HabitLog
 import com.cmp.microhabit.ui.screen.onboarding.model.Statistics
+import com.cmp.microhabit.ui.screen.onboarding.model.StreakChartDetails
 import com.cmp.microhabit.ui.screen.onboarding.model.UserHabit
 import com.cmp.microhabit.utils.DbRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -51,6 +52,26 @@ class HomeRepository @Inject constructor() {
                 if (it.exists()) {
                     val statistics = it.toObject(Statistics::class.java)
                     onResult(statistics)
+                } else {
+                    onResult(null)
+                }
+            }.addOnFailureListener {
+                Log.d("ErrorLog", it.message.toString())
+                onResult(null)
+            }
+    }
+
+    fun getStreakChartData(
+        userId: String,
+        habitId: String,
+        onResult: (StreakChartDetails?) -> Unit
+    ) {
+        DbRepository.getChartDetails(db, userId, habitId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val userData = document.toObject(StreakChartDetails::class.java)
+                    onResult(userData)
                 } else {
                     onResult(null)
                 }

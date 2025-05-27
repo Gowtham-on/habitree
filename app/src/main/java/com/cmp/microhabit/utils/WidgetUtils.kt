@@ -106,7 +106,8 @@ fun ShowLottieWithIterations(
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = modifier.size(height.dp),
+            modifier = modifier.size(height.dp)
+
         )
     } else {
         LottieAnimation(

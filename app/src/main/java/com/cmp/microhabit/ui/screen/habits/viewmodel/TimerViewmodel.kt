@@ -9,7 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class TimerViewModel(initialSeconds: Int) : ViewModel() {
+class TimerViewModel(val initialSeconds: Int) : ViewModel() {
     var secondsLeft by mutableIntStateOf(initialSeconds)
 
     private var timerJob: Job? = null
@@ -45,7 +45,7 @@ class TimerViewModel(initialSeconds: Int) : ViewModel() {
         isStarted = false
         timerJob?.cancel()
         timerJob = null
-        secondsLeft = initial
+        secondsLeft = initialSeconds
         isPaused = false
     }
 

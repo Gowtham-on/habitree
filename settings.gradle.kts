@@ -9,6 +9,11 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("https://repo1.maven.org/maven2/")
+        }
+        mavenLocal()
+
     }
 }
 dependencyResolutionManagement {
@@ -21,4 +26,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MicroHabit"
 include(":app")
- 
+include(":charts")

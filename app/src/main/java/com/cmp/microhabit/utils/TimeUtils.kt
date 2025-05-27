@@ -55,4 +55,38 @@ object TimeUtils {
             sdf.format(currentDate)
         }
     }
+
+    fun getCurrentMonthDatesInFormat(format: String): List<String> {
+        val result = mutableListOf<String>()
+        val calendar = Calendar.getInstance()
+
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+
+        val sdf = SimpleDateFormat(format, Locale.getDefault())
+        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        for (day in 1..daysInMonth) {
+            calendar.set(Calendar.DAY_OF_MONTH, day)
+            result.add(sdf.format(calendar.time))
+        }
+        return result
+    }
+
+
+    fun getCurrentWeekDatesInFormat(format: String): List<String> {
+        val result = mutableListOf<String>()
+        val calendar = Calendar.getInstance()
+
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek) // Typically Sunday
+
+        val sdf = SimpleDateFormat(format, Locale.getDefault())
+
+        for (i in 0..6) {
+            result.add(sdf.format(calendar.time))
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+        return result
+    }
+
+
 }

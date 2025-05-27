@@ -1,7 +1,6 @@
 package com.cmp.microhabit.ui.component.dropdown
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +33,9 @@ fun MhDropdownMenu(
     dropdownItemsStyle: TextStyle,
     canShowLabel: Boolean = false,
     fieldWidth: Int = 100,
-    maxLines: Int = 1
+    maxLines: Int = 1,
+    dropDownModifier: Modifier = modifier,
+    fieldColor: Color? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedText = items.getOrNull(selectedIndex) ?: ""
@@ -42,9 +43,7 @@ fun MhDropdownMenu(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .width(fieldWidth.dp),
+        modifier = dropDownModifier
     ) {
         TextField(
             value = selectedText,
@@ -65,12 +64,12 @@ fun MhDropdownMenu(
             }) else null,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = modifier
+                .fillMaxWidth()
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                .clip(RoundedCornerShape(20.dp))
-                .width(fieldWidth.dp),
+                .clip(RoundedCornerShape(20.dp)),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
+                focusedContainerColor = fieldColor ?:Color.Transparent ,
+                unfocusedContainerColor = fieldColor ?:Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
             ),
@@ -81,8 +80,7 @@ fun MhDropdownMenu(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = Color.White
-
+            containerColor = Color.White,
         ) {
             items.forEachIndexed { idx, item ->
                 DropdownMenuItem(

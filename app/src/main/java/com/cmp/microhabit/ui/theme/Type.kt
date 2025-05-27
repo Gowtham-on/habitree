@@ -49,7 +49,7 @@ val Typography = Typography(
     ),
     titleMedium = TextStyle(
         fontFamily = WorkSans,
-        fontWeight = FontWeight.W500,
+        fontWeight = FontWeight.W600,
         fontSize = 20.sp,
         lineHeight = 28.sp,
     ),
