@@ -73,7 +73,6 @@ fun HabitsScreen(homeViewmodel: HomeViewmodel) {
         GetHabitsDropdown(homeViewmodel)
         SetVerticalGap(16)
         GetHabitOverviewCard(homeViewmodel)
-        SetVerticalGap(16)
         GetStreakDetails(homeViewmodel)
         SetVerticalGap(16)
         GetHabitTimerCard(homeViewmodel, onboardingViewmodel.userData.value.id)

@@ -106,4 +106,5 @@ class HomeViewmodel @Inject constructor(
         loadHabitStatistics(habitId)
         getStreakChartData(habitId)
     }
+
 }
