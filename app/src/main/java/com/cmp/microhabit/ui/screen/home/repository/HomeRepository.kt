@@ -6,7 +6,9 @@ import com.cmp.microhabit.ui.screen.onboarding.model.Statistics
 import com.cmp.microhabit.ui.screen.onboarding.model.StreakChartDetails
 import com.cmp.microhabit.ui.screen.onboarding.model.UserHabit
 import com.cmp.microhabit.utils.DbRepository
+import com.cmp.microhabit.utils.RepositoryType
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor() {
@@ -79,5 +81,41 @@ class HomeRepository @Inject constructor() {
                 Log.d("ErrorLog", it.message.toString())
                 onResult(null)
             }
+    }
+
+    fun completeTask(
+        habitId: String,
+        userId: String,
+        date: String,
+        isCompleted: Boolean,
+        currentStreak: Int,
+        bestStreak: Int,
+        noOfTimesCompleted: Int,
+        habitLogs: Map<String, HabitLog>,
+        onResult: (updated: Boolean, type: RepositoryType) -> Unit
+    ) {
+        habitLogs.toMutableMap()[habitId]?.dateLogs?.toMutableMap()[date] = isCompleted
+
+        val dateLogs = habitLogs[habitId]?.dateLogs?.toMutableMap()
+        dateLogs?.set(date, isCompleted)
+        val collectionRef = DbRepository.getHabitInfoCollection(db, userId, habitId)
+        // update Logs
+        collectionRef.document("logs").update("dateLogs", dateLogs ?: mapOf<String, Boolean>())
+            .addOnSuccessListener {
+                onResult(true, RepositoryType.LOG)
+            }.addOnFailureListener {
+                onResult(false, RepositoryType.LOG)
+            }
+
+        collectionRef.document("statistics").update(mapOf(
+            "currentStreak" to currentStreak + 1,
+            "noOfTimesCompleted" to noOfTimesCompleted + 1,
+            "bestStreak" to bestStreak
+        ))
+
+        collectionRef.document("chartDetails").set(
+            mapOf("streaks" to mapOf(date to currentStreak + 1)),
+            SetOptions.merge()
+        )
     }
 }

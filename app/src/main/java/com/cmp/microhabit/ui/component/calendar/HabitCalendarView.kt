@@ -40,7 +40,7 @@ fun GetHabitCalendarView(
 ) {
 
 
-    val days = TimeUtils.getDateRangeLastSundayToThisSaturday("dd-MM-YYYY", 13)
+    val days = TimeUtils.getDateRangeLastSundayToThisSaturday(TimeUtils.getDefaultPattern(), 13)
 
     val daysList = remember {
         listOf(
@@ -62,7 +62,7 @@ fun GetHabitCalendarView(
     }
 
     val logs by viewmodel.logs
-    val habitLog = logs[viewmodel.selectedHabit.value.habitId.toString()]
+    val habitLog = logs["${viewmodel.getSelectedHabitId()}"]
 
     LaunchedEffect(viewmodel.selectedHabit.value) {
         viewmodel.loadLogsForHabit(viewmodel.selectedHabit.value.habitId.toString())

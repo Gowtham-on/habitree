@@ -17,7 +17,7 @@ class TimerViewModel(val initialSeconds: Int) : ViewModel() {
     private val initial = initialSeconds
     private var isStarted by mutableStateOf(false)
 
-    fun start() {
+    fun start(onFinish: (() -> Unit)? = null) {
         if (timerJob == null || timerJob?.isCompleted == true) {
             isPaused = false
             isStarted = true
@@ -28,6 +28,7 @@ class TimerViewModel(val initialSeconds: Int) : ViewModel() {
                         secondsLeft -= 1
                     }
                 }
+                onFinish?.invoke()
             }
         }
     }

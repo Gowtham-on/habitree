@@ -106,13 +106,13 @@ fun GetHabitGardenItem(modifier: Modifier, item: UserHabit, homeViewmodel: HomeV
                 }
             )
             .then(
-                if (item.habitId == homeViewmodel.selectedHabit.value.habitId)
+                if (item.habitId == homeViewmodel.getSelectedHabitId())
                     modifier
                         .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                 else Modifier
             ),
         colors = CardDefaults.cardColors(
-            containerColor = if (item.habitId == homeViewmodel.selectedHabit.value.habitId)
+            containerColor = if (item.habitId == homeViewmodel.getSelectedHabitId())
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             else
                 Color.White.copy(alpha = 0.8f)

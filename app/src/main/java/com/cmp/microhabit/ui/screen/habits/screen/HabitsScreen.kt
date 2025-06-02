@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,26 +32,41 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmp.microhabit.R
 import com.cmp.microhabit.ui.component.dropdown.MhDropdownMenu
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.ui.screen.onboarding.model.Statistics
-import com.cmp.microhabit.ui.screen.onboarding.viewmodel.OnboardingViewmodel
 import com.cmp.microhabit.utils.LoadLottieWithModifier
 import com.cmp.microhabit.utils.SetVerticalGap
+import com.cmp.microhabit.utils.TimeUtils
+import com.wajahatkarim.flippable.FlipAnimationType
+import com.wajahatkarim.flippable.Flippable
+import com.wajahatkarim.flippable.rememberFlipController
 
 @Composable
 fun HabitsScreen(homeViewmodel: HomeViewmodel) {
-    val onboardingViewmodel: OnboardingViewmodel = hiltViewModel()
-
     val selectedHabit = homeViewmodel.selectedHabit.value
+    val flipController = rememberFlipController()
+
+    var canShowTimer = remember(homeViewmodel.selectedHabit.value, homeViewmodel.logs.value) {
+        mutableStateOf(
+            homeViewmodel.logs.value["${homeViewmodel.getSelectedHabitId()}"]?.dateLogs[TimeUtils.getToday()]
+        )
+    }
 
     LaunchedEffect(Unit) {
         if (selectedHabit.habitId == -1 && homeViewmodel.habitList.value.isNotEmpty()) {
             val firstHabit = homeViewmodel.habitList.value[0]
             homeViewmodel.setSelectedHabit(firstHabit)
             homeViewmodel.getAllHabitDetails(firstHabit.habitId.toString())
+        }
+    }
+
+    LaunchedEffect(canShowTimer) {
+        if (canShowTimer.value == true) {
+            flipController.flipToFront()
+        } else {
+            flipController.flipToBack()
         }
     }
 
@@ -74,9 +90,19 @@ fun HabitsScreen(homeViewmodel: HomeViewmodel) {
         SetVerticalGap(16)
         GetHabitOverviewCard(homeViewmodel)
         GetStreakDetails(homeViewmodel)
-        SetVerticalGap(16)
-        GetHabitTimerCard(homeViewmodel, onboardingViewmodel.userData.value.id)
-        SetVerticalGap(16)
+        SetVerticalGap(4)
+        Flippable(
+            frontSide = {
+                GetHabitTimerCard(homeViewmodel, true)
+            },
+            backSide = {
+                GetHabitTimerCard(homeViewmodel, false)
+            },
+            flipController = flipController,
+            flipAnimationType = FlipAnimationType.HORIZONTAL_CLOCKWISE,
+            flipOnTouch = false,
+        )
+        SetVerticalGap(4)
         GetHabitLineChart(homeViewmodel)
         SetVerticalGap(100)
 

@@ -40,4 +40,7 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="reset">Reset</string>
+    <string name="habit_streak_progress">Habit Streak Progress</string>
+    <string name="weekly_view">Weekly View</string>
+    <string name="monthly_view">Monthly View</string>
 </resources>

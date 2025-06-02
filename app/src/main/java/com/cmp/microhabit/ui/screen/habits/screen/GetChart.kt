@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cmp.microhabit.R
@@ -28,6 +29,7 @@ import com.cmp.microhabit.ui.component.dropdown.MhDropdownMenu
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
 import com.cmp.microhabit.utils.SetVerticalGap
 import com.cmp.microhabit.utils.ShowLottieWithIterations
+import com.cmp.microhabit.utils.TimeUtils
 import com.cmp.microhabit.utils.TimeUtils.getCurrentMonthDatesInFormat
 import com.cmp.microhabit.utils.TimeUtils.getCurrentWeekDatesInFormat
 import me.bytebeats.views.charts.line.LineChart
@@ -41,8 +43,8 @@ import me.bytebeats.views.charts.line.render.yaxis.SimpleYAxisDrawer
 
 @Composable
 fun GetHabitLineChart(homeViewmodel: HomeViewmodel) {
-    val monthDates = getCurrentMonthDatesInFormat("dd-MM-yyyy")
-    val weekDates = getCurrentWeekDatesInFormat("dd-MM-yyyy")
+    val monthDates = getCurrentMonthDatesInFormat(TimeUtils.getDefaultPattern())
+    val weekDates = getCurrentWeekDatesInFormat(TimeUtils.getDefaultPattern())
 
     val chartData by homeViewmodel.chartData
     val selectedHabit by homeViewmodel.selectedHabit
@@ -57,17 +59,17 @@ fun GetHabitLineChart(homeViewmodel: HomeViewmodel) {
         hasValue = false
         if (selectedIdx == 0) {
             weekDates.map { date ->
-                var first =
+                var streak =
                     chartData[selectedHabit.habitId.toString()]?.streaks[date]
                 var second = date.take(2)
 
-                if (first == null) {
-                    first = 0
+                if (streak == null) {
+                    streak = 0
                 } else {
                     hasValue = true
-                    first.toString().take(2).toFloat()
+                    streak.toString().toFloat()
                 }
-                Point(first.toFloat(), second)
+                Point(streak.toFloat(), second)
             }
         } else {
             monthDates.map { date ->
@@ -79,7 +81,7 @@ fun GetHabitLineChart(homeViewmodel: HomeViewmodel) {
                     first = 0
                 } else {
                     hasValue = true
-                    first.toString().take(2).toFloat()
+                    first.toString().toFloat()
                 }
                 Point(first.toFloat(), second)
             }
@@ -97,13 +99,19 @@ fun GetHabitLineChart(homeViewmodel: HomeViewmodel) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             SetVerticalGap(20)
-            Text("Habit Streak Progress", style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.habit_streak_progress),
+                style = MaterialTheme.typography.titleMedium
+            )
             SetVerticalGap(20)
             Box(
                 modifier = Modifier.padding(horizontal = 30.dp)
             ) {
                 MhDropdownMenu(
-                    items = listOf("Weekly View", "Monthly View"),
+                    items = listOf(
+                        stringResource(R.string.weekly_view),
+                        stringResource(R.string.monthly_view)
+                    ),
                     selectedIndex = selectedIdx,
                     onItemSelected = {
                         selectedIdx = it

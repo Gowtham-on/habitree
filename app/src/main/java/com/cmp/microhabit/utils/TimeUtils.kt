@@ -7,6 +7,9 @@ import java.util.Calendar
 import java.util.Locale
 
 object TimeUtils {
+
+    private const val DEFAULT_TIME_PATTERN = "dd-MM-YYYY"
+
     fun getDateRangeLastSundayToThisSaturday(pattern: String, noOfDaysBefore: Int): List<String> {
         val cal = Calendar.getInstance()
         cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
@@ -30,14 +33,14 @@ object TimeUtils {
         return today.get(Calendar.DAY_OF_MONTH) == dateString.toInt()
     }
 
-    fun getYesterday(pattern: String): String {
+    fun getYesterday(pattern: String = DEFAULT_TIME_PATTERN): String {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_YEAR, -1)
         val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
 
-    fun getToday(pattern: String): String {
+    fun getToday(pattern: String = DEFAULT_TIME_PATTERN): String {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
         return dateFormat.format(calendar.time)
@@ -86,6 +89,10 @@ object TimeUtils {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         return result
+    }
+
+    fun getDefaultPattern(): String {
+        return DEFAULT_TIME_PATTERN
     }
 
 

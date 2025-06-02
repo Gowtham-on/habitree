@@ -11,3 +11,9 @@ enum class LottieType(val key : String, @RawRes val resId : Int) {
     CREATIVE_HABITS("habit_fitness",  R.raw.idea_lottie),
     CAREER_GROWTH("habit_fitness",  R.raw.workout_lottie),
 }
+
+enum class RepositoryType {
+    LOG,
+    STATISTICS,
+    CHART_LOG,
+}

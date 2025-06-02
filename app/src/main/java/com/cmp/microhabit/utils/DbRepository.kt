@@ -14,6 +14,10 @@ object DbRepository {
         return getCurrentUser(db, userId).collection("habits")
     }
 
+    fun getHabitInfoCollection(db: FirebaseFirestore, userId: String, habitId: String): CollectionReference {
+        return getHabitsList(db, userId).document("habit_$habitId").collection("habit_info")
+    }
+
     fun getHabitLogs(db: FirebaseFirestore, userId: String, habitId: String): DocumentReference {
         return getHabitsList(db, userId).document("habit_$habitId").collection("habit_info").document("logs")
     }

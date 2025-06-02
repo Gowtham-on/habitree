@@ -36,9 +36,9 @@ data class HabitLog (
 )
 
 data class Statistics (
-    val currentStreak: Int = 0,
-    val noOfTimesCompleted: Int = 0,
-    val bestStreak: Int = 0,
+    var currentStreak: Int = 0,
+    var noOfTimesCompleted: Int = 0,
+    var bestStreak: Int = 0,
 )
 
 data class StreakChartDetails (
