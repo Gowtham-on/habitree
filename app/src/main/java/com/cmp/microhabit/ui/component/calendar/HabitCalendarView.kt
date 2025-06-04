@@ -120,10 +120,10 @@ fun GetDayText(day: String) {
 
 @Composable
 fun GetCircularBg(date: String, dateLogs: Map<String, Boolean>) {
-    val isCompleted = if (dateLogs.contains(date) == true) {
-        dateLogs[date]
+    val isCompleted: Boolean = if (dateLogs.containsKey(date)) {
+        dateLogs[date] ?: false
     } else {
-        HabitLog()
+        false
     }
 
     val infiniteTransition = rememberInfiniteTransition()
