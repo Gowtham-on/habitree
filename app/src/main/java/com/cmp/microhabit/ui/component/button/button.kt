@@ -62,7 +62,7 @@ fun MhButton(
     textAlignment: TextAlign = TextAlign.Center,
     textContentAlignment: Alignment = Alignment.Center,
     animationIncreaseSize: Float = 1.15f,
-    canShowShadow: Boolean = false,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
 
@@ -77,7 +77,7 @@ fun MhButton(
     )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(width?.dp ?: Dp.Unspecified)
             .height(height?.dp ?: Dp.Unspecified)
             .graphicsLayer {

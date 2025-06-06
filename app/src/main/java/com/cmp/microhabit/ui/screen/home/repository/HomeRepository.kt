@@ -107,15 +107,36 @@ class HomeRepository @Inject constructor() {
                 onResult(false, RepositoryType.LOG)
             }
 
-        collectionRef.document("statistics").update(mapOf(
-            "currentStreak" to currentStreak + 1,
-            "noOfTimesCompleted" to noOfTimesCompleted + 1,
-            "bestStreak" to bestStreak
-        ))
+        collectionRef.document("statistics").update(
+            mapOf(
+                "currentStreak" to currentStreak + 1,
+                "noOfTimesCompleted" to noOfTimesCompleted + 1,
+                "bestStreak" to bestStreak
+            )
+        )
 
         collectionRef.document("chartDetails").set(
             mapOf("streaks" to mapOf(date to currentStreak + 1)),
             SetOptions.merge()
         )
+    }
+
+    fun addReflectionNotes(
+        habitLogs: Map<String, HabitLog>,
+        habitId: String,
+        date: String,
+        notes: String,
+        userId: String,
+        onResult: (updated: Boolean, type: RepositoryType) -> Unit
+    ) {
+        val dateLogs = habitLogs[habitId]?.reflectionNotes?.toMutableMap()
+        dateLogs?.set(date, notes)
+        val collectionRef = DbRepository.getHabitInfoCollection(db, userId, habitId)
+        collectionRef.document("logs").update("reflectionNotes", dateLogs ?: mapOf<String, Boolean>())
+            .addOnSuccessListener {
+                onResult(true, RepositoryType.REFLECTION_NOTES)
+            }.addOnFailureListener {
+                onResult(false, RepositoryType.REFLECTION_NOTES)
+            }
     }
 }

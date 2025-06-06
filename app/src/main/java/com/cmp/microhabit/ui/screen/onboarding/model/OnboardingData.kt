@@ -33,6 +33,7 @@ data class UserHabit(
 
 data class HabitLog (
     val dateLogs: Map<String, Boolean> = mapOf(),
+    val reflectionNotes: Map<String, String> = mapOf()
 )
 
 data class Statistics (

@@ -43,4 +43,8 @@
     <string name="habit_streak_progress">Habit Streak Progress</string>
     <string name="weekly_view">Weekly View</string>
     <string name="monthly_view">Monthly View</string>
+    <string name="reflection_notes">✍️ Reflection Notes</string>
+    <string name="write_about_today_s_session">Write about today\'s session…</string>
+    <string name="save">Save</string>
+    <string name="notes_added_successfully">Notes added successfully</string>
 </resources>

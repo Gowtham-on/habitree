@@ -87,7 +87,6 @@ fun GetButtonOptions(viewmodel: OnboardingViewmodel) {
                 animationIncreaseSize = 1.07f,
                 enableHapticFeedback = true,
                 fillColor = if (isSelected) MaterialTheme.colorScheme.secondary else Color.Transparent,
-                canShowShadow = true,
                 paddingHorizontal = 13,
             ) {
                 if (isSelected) {

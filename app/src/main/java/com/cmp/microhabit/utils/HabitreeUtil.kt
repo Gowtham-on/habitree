@@ -16,4 +16,5 @@ enum class RepositoryType {
     LOG,
     STATISTICS,
     CHART_LOG,
+    REFLECTION_NOTES
 }

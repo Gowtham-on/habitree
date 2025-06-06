@@ -104,6 +104,8 @@ fun HabitsScreen(homeViewmodel: HomeViewmodel) {
         )
         SetVerticalGap(4)
         GetHabitLineChart(homeViewmodel)
+        SetVerticalGap(4)
+        GetReflectionNotes(homeViewmodel)
         SetVerticalGap(100)
 
     }

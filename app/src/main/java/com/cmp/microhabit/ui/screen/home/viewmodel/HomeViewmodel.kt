@@ -182,4 +182,23 @@ class HomeViewmodel @Inject constructor(
             }
         }
     }
+
+    fun addReflectionNotes(
+        habitId: String,
+        date: String,
+        notes: String,
+        onResult: (isSuccess: Boolean) -> Unit
+    ) {
+        repo.addReflectionNotes(
+            habitLogs = _logsList.value,
+            habitId = habitId,
+            date = date,
+            notes = notes,
+            userId = userId
+        ) { isSuccess, type ->
+            onResult(isSuccess)
+        }
+    }
+
+
 }
