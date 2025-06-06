@@ -173,7 +173,8 @@ class HomeViewmodel @Inject constructor(
                 if (oldChartDetails != null) {
                     val updatedStreaks = oldChartDetails.streaks.toMutableMap()
                     updatedStreaks[date] =
-                        (_habitStatistics.value?.get(habitId)?.currentStreak ?: 0) + 1
+                        updatedStreaks[TimeUtils.getYesterday()]?.plus(1) ?: 0
+
                     val updatedChartDetails = oldChartDetails.copy(streaks = updatedStreaks)
                     val updatedChartData = _chartData.value.toMutableMap()
                     updatedChartData[habitId] = updatedChartDetails

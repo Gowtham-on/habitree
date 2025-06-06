@@ -40,6 +40,7 @@ import com.cmp.microhabit.R
 import com.cmp.microhabit.ui.screen.habits.screen.HabitsScreen
 import com.cmp.microhabit.ui.screen.home.screens.HomeScreen
 import com.cmp.microhabit.ui.screen.home.viewmodel.HomeViewmodel
+import com.cmp.microhabit.ui.screen.profileSettings.view.ProfileAndSettingsScreen
 import com.cmp.microhabit.utils.AppRoutes
 import com.cmp.microhabit.utils.BottomTabItems
 import com.cmp.microhabit.utils.SetVerticalGap
@@ -79,7 +80,7 @@ fun GetHomeScreens() {
             composable("Home") { HomeScreen(viewmodel, tabNavController) }
             composable("Habits") { HabitsScreen(viewmodel) }
             composable("Insights") { Text("Insights") }
-            composable("Profile") { Text("Profile") }
+            composable("Profile") { ProfileAndSettingsScreen() }
         }
     }
 }

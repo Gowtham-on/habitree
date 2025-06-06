@@ -47,4 +47,5 @@
     <string name="write_about_today_s_session">Write about today\'s session…</string>
     <string name="save">Save</string>
     <string name="notes_added_successfully">Notes added successfully</string>
+    <string name="profile_settings">⚙ <![CDATA[Profile & Settings]]></string>
 </resources>

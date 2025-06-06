@@ -71,5 +71,11 @@ val Typography = Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
-    )
+    ),
+    labelMedium = TextStyle(
+        fontFamily = WorkSans,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        lineHeight = 24.sp,
+    ),
 )
